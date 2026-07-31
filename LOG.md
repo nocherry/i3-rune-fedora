@@ -457,3 +457,42 @@ git branch -M main
 git push -u origin main
 ```
 
+## Доработка: иконки в Rofi и дневная тема (2026-07-31)
+
+### Пожелания пользователя
+- Добавить иконки слева в `Super + D` (Rofi).
+- Как переключать тему Rofi на дневную (светлую).
+
+### Сделано
+1. **Иконки в Rofi:**
+   - В `~/.config/i3/scripts/rofi.sh` добавлены флаги `-show-icons -icon-theme "Papirus"`.
+   - Тема `nord.rasi` уже содержит блоки `element-icon` и `element-text`, поэтому иконки отображаются слева от названий приложений.
+   - Набор иконок `Papirus` уже установлен (`papirus-icon-theme`).
+
+2. **Светлая тема Rofi:**
+   - Создан файл `~/.config/rofi/themes/nord-light.rasi` на основе `nord.rasi` с цветами Snow Storm.
+   - Создан скрипт переключения темы `~/.config/rofi/scripts/toggle-theme.sh`:
+     ```bash
+     if grep -q 'nord-light' ~/.config/rofi/config.rasi; then
+         sed -i 's|themes/nord-light.rasi|themes/nord.rasi|'
+         notify-send "Rofi theme" "Dark theme enabled"
+     else
+         sed -i 's|themes/nord.rasi|themes/nord-light.rasi|'
+         notify-send "Rofi theme" "Light theme enabled"
+     fi
+     ```
+
+3. **Горячая клавиша для переключения темы:**
+   - `Super + Shift + D` → `~/.config/rofi/scripts/toggle-theme.sh`
+   - Добавлена в `keybindings.sh`.
+
+### Проверка
+- `i3 -C -c ~/.config/i3/config` — OK.
+- `bash -n ~/.config/rofi/scripts/toggle-theme.sh` — OK.
+
+### Что нужно сделать пользователю
+1. Перезагрузить i3: `Super + Shift + C`.
+2. Нажать `Super + D` — у приложений слева должны появиться иконки.
+3. Нажать `Super + Shift + D` — появится уведомление "Light theme enabled", и следующий вызов `Super + D` будет в светлой теме.
+4. Ещё раз `Super + Shift + D` вернёт тёмную тему.
+

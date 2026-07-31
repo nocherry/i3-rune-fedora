@@ -86,6 +86,8 @@ exec_always --no-startup-id picom --config ~/.config/picom/picom.conf
 ### Apps & Launchers
 # Use rofi.sh so toggle logic stays out of i3 config and works on RU/EN layouts
 bindcode $mod+40 exec --no-startup-id ~/.config/i3/scripts/rofi.sh
+# Toggle Rofi dark/light theme
+bindcode $mod+Shift+40 exec --no-startup-id ~/.config/rofi/scripts/toggle-theme.sh
 bindcode $mod+56 exec xdg-open "https://"
 bindcode $mod+36 exec $term;focus
 bindcode $mod+26 exec $files

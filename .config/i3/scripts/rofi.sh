@@ -3,5 +3,5 @@
 if pgrep -x rofi >/dev/null 2>&1; then
     pkill -x rofi
 else
-    rofi -show drun -modi drun,filebrowser,run,window
+    rofi -show drun -modi drun,filebrowser,run,window -show-icons -icon-theme "Papirus"
 fi
