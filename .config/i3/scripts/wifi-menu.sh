@@ -24,7 +24,7 @@ choice=$(echo -e "$list" | rofi -dmenu -i -p "WiFi")
 
 # Handle toggle
 if [[ "$choice" == "[toggle WiFi on/off]" ]]; then
-    nmcli radio wifi toggle
+    nmcli radio wifi $(nmcli radio wifi | grep -q enabled && echo off || echo on)
     exit 0
 fi
 

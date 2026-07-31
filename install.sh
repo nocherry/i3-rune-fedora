@@ -54,11 +54,11 @@ echo "  Backup saved to: $BACKUP_DIR"
 # fontawesome-fonts-web) are not present in newer Fedora repos but are non-critical.
 header "Installing packages"
 sudo dnf install -y --skip-unavailable \
-    i3 polybar rofi picom dunst kitty Thunar feh nitrogen \
-    network-manager-applet blueman pavucontrol brightnessctl maim playerctl \
+    i3 polybar rofi picom dunst kitty thunar feh nitrogen \
+    network-manager-applet blueman pavucontrol brightnessctl maim slop playerctl \
     xorg-x11-server-Xorg xorg-x11-xinit xrandr xset xsetroot \
     gnome-keyring gnome-settings-daemon lxqt-policykit \
-    neovim btop fastfetch fish zoxide eza yad xclip xss-lock slock \
+    neovim btop fastfetch fish zoxide eza yad xclip xss-lock i3lock \
     nwg-look qt5ct qt6ct kvantum \
     jetbrains-mono-fonts-all google-noto-emoji-fonts google-noto-color-emoji-fonts \
     fontawesome-fonts papirus-icon-theme \
@@ -112,10 +112,17 @@ if ! command -v greenclip &>/dev/null; then
     msg "greenclip installed to ~/.local/bin/greenclip"
 fi
 
-# Install libinput-gestures if available (optional, for touchpad gestures)
-if ! command -v libinput-gestures-setup &>/dev/null; then
-    header "Installing libinput-gestures (optional)"
-    sudo dnf install -y --skip-unavailable libinput-gestures || warn "libinput-gestures install failed (non-fatal)."
+# Install libinput-gestures if missing (not in Fedora repos — install from GitHub)
+if [ ! -x "$HOME/.local/bin/libinput-gestures" ]; then
+    header "Installing libinput-gestures (from GitHub)"
+    mkdir -p "$HOME/.local/bin"
+    curl -sL -o "$HOME/.local/bin/libinput-gestures" https://raw.githubusercontent.com/bulletmark/libinput-gestures/master/libinput-gestures
+    chmod +x "$HOME/.local/bin/libinput-gestures"
+    if [ -s "$HOME/.local/bin/libinput-gestures" ]; then
+        msg "libinput-gestures installed to ~/.local/bin"
+    else
+        warn "libinput-gestures download failed (non-fatal). Touchpad gestures will not work."
+    fi
 fi
 
 # Clone wallpapers

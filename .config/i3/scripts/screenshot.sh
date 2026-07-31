@@ -14,8 +14,7 @@ case "$mode" in
         maim "$out" && copy_clipboard
         ;;
     area)
-        # --shader="" disables the blur/dim overlay while selecting
-        maim -s --shader="" "$out" && copy_clipboard
+        maim -s "$out" && copy_clipboard
         ;;
     delay5)
         sleep 5

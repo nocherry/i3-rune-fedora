@@ -1,22 +1,13 @@
 #!/usr/bin/env bash
 # ponytail: launch polybar with auto-restart on crash and single-instance guard
 
-PIDFILE="/tmp/polybar-launch.pid"
-
-# Kill previous launcher loop (and its polybar children) using saved PID
-if [ -f "$PIDFILE" ]; then
-    oldpid=$(cat "$PIDFILE" 2>/dev/null)
-    if [ -n "$oldpid" ] && kill -0 "$oldpid" 2>/dev/null; then
-        kill -TERM -"$oldpid" 2>/dev/null || true
-        sleep 0.3
-    fi
-fi
-echo $$ > "$PIDFILE"
-
-# Terminate any leftover polybar instances
+# Kill previous launcher loops (excluding ourselves — pkill -f would match self)
+for pid in $(pgrep -f 'config/polybar/launch.sh' 2>/dev/null); do
+    [ "$pid" != "$$" ] && kill "$pid" 2>/dev/null
+done
 polybar-msg cmd quit 2>/dev/null || true
-killall -q polybar || true
-while pgrep -x polybar >/dev/null; do sleep 0.1; done
+killall -q polybar 2>/dev/null || true
+sleep 0.3
 
 # Auto-detect battery and adapter names for this machine
 export POLYBAR_BATTERY=${POLYBAR_BATTERY:-$(ls /sys/class/power_supply/ 2>/dev/null | grep -E '^BAT' | head -n1)}

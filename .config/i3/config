@@ -52,7 +52,7 @@ exec --no-startup-id gnome-keyring-daemon --start --components=secrets
 exec --no-startup-id xsettingsd
 
 # Lock on suspend (only if xss-lock is installed)
-exec --no-startup-id sh -c "command -v xss-lock >/dev/null && xss-lock --transfer-sleep-lock -- i3lock -c #2e3440 || true"
+exec --no-startup-id sh -c "command -v xss-lock >/dev/null && xss-lock --transfer-sleep-lock -- i3lock -c 2e3440 || true"
 
 # Capture i3 log for error viewer
 exec --no-startup-id sh -c "mkdir -p ~/.local/share/i3 && i3-dump-log > ~/.local/share/i3/log 2>&1 &"
@@ -65,11 +65,11 @@ exec --no-startup-id sh -c "command -v pasytray >/dev/null && pasytray &"
 # Notifications
 exec --no-startup-id dunst &
 
-# Clipboard manager (greenclip)
-exec --no-startup-id sh -c "command -v greenclip >/dev/null && greenclip daemon &"
+# Clipboard manager (greenclip) — absolute path: session PATH lacks ~/.local/bin
+exec --no-startup-id sh -c "[ -x $HOME/.local/bin/greenclip ] && $HOME/.local/bin/greenclip daemon &"
 
-# Touchpad gestures (only if libinput-gestures is installed)
-exec --no-startup-id sh -c "command -v libinput-gestures-setup >/dev/null && libinput-gestures-setup start || true"
+# Touchpad gestures (run daemon directly; setup script would delete the binary)
+exec --no-startup-id sh -c "[ -x $HOME/.local/bin/libinput-gestures ] && $HOME/.local/bin/libinput-gestures &"
 
 # Wallpaper dirs
 exec --no-startup-id mkdir -p ~/Pictures/Screenshots
@@ -91,11 +91,11 @@ exec_always --no-startup-id picom --config ~/.config/picom/picom.conf
 # Use rofi.sh so toggle logic stays out of i3 config and works on RU/EN layouts
 bindcode $mod+40 exec --no-startup-id ~/.config/i3/scripts/rofi.sh
 # Clipboard history (works on both RU/EN layouts because bound by keycode)
-bindcode $mod+Shift+49 exec --no-startup-id sh -c "rofi -modi 'clipboard:greenclip print' -show clipboard -run-command '{cmd}'"
+bindcode $mod+Shift+49 exec --no-startup-id sh -c "rofi -modi 'clipboard:$HOME/.local/bin/greenclip print' -show clipboard -run-command '{cmd}'"
 # Toggle global dark/light theme
 bindcode $mod+Shift+40 exec --no-startup-id ~/.config/i3/scripts/theme-toggle.sh
-bindcode $mod+56 exec xdg-open "https://"
-bindcode $mod+36 exec $term;focus
+bindcode $mod+56 exec xdg-open "https://www.google.com"
+bindcode $mod+36 exec $term
 bindcode $mod+26 exec $files
 
 ### Help / Menus
@@ -110,8 +110,8 @@ bindcode $mod+Shift+61 exec ~/.config/i3/scripts/welcome.sh --manual
 ### System / Session
 bindsym Ctrl+Mod1+Delete exec ~/.config/i3/scripts/i3exit.sh logout
 bindcode $mod+24 kill
-bindsym Ctrl+Mod1+l exec ~/.config/i3/scripts/i3exit.sh lock
-bindsym Ctrl+Mod1+p exec ~/.config/i3/scripts/powermenu.sh
+bindcode Ctrl+Mod1+46 exec ~/.config/i3/scripts/i3exit.sh lock
+bindcode Ctrl+Mod1+33 exec ~/.config/i3/scripts/powermenu.sh
 
 ### Window state
 bindcode $mod+41 fullscreen toggle

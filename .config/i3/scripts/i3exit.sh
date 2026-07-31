@@ -6,7 +6,7 @@ case "$1" in
         if [ -f ~/Pictures/wallpapers/bg.png ]; then
             i3lock -i ~/Pictures/wallpapers/bg.png
         else
-            i3lock -c #2e3440
+            i3lock -c 2e3440
         fi
         ;;
     logout)

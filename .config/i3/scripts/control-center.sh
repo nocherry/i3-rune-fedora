@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # ponytail: rofi quick settings / control center
 choice=$(cat <<'EOF' | rofi -dmenu -i -p "Control"
-WiFi: toggle
+WiFi: networks
+WiFi: toggle on/off
 WiFi: settings
-Bluetooth: toggle
+Bluetooth: toggle on/off
 Bluetooth: settings
 Volume: +5%
 Volume: -5%
@@ -12,7 +13,6 @@ Brightness: +5%
 Brightness: -5%
 Screenshot: area
 Screenshot: full
-Screenshot: to clipboard (area)
 Launch: tg-ws-proxy
 Lock
 Logout
@@ -29,9 +29,9 @@ EOF
 
 case "$choice" in
     "WiFi: networks")      ~/.config/i3/scripts/wifi-menu.sh ;;
-    "WiFi: toggle")        nmcli radio wifi toggle ;;
+    "WiFi: toggle on/off") nmcli radio wifi $(nmcli radio wifi | grep -q enabled && echo off || echo on) ;;
     "WiFi: settings")      nm-connection-editor ;;
-    "Bluetooth: toggle")   bluetoothctl power toggle ;;
+    "Bluetooth: toggle on/off") bluetoothctl power $(bluetoothctl show | grep -q "Powered: yes" && echo off || echo on) ;;
     "Bluetooth: settings") blueman-manager ;;
     "Volume: +5%")         pactl set-sink-volume @DEFAULT_SINK@ +5% ;;
     "Volume: -5%")         pactl set-sink-volume @DEFAULT_SINK@ -5% ;;
