@@ -94,6 +94,7 @@ bindcode $mod+26 exec $files
 
 ### Help / Menus
 bindcode $mod+43 exec ~/.config/i3/scripts/keybindings.sh
+bindcode $mod+Shift+43 exec --no-startup-id sh -c "i3-dump-log | tail -n 50 | xclip -selection clipboard && notify-send 'i3 errors' 'Copied to clipboard'"
 bindcode $mod+Shift+61 exec ~/.config/i3/scripts/welcome.sh --manual
 
 ### System / Session

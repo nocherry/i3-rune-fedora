@@ -1,5 +1,5 @@
 /*
- * Nordic rofi theme - light/day variant
+ * Nordic rofi theme - light/day variant (high contrast)
  * Based on https://www.nordtheme.com/
  */
 
@@ -29,19 +29,16 @@
     background-color:  transparent;
 
     highlight:     underline bold #5e81ac;
-
-    transparent: rgba(236,239,244,0);
 }
 
 window {
     location: center;
     anchor:   center;
-    transparency: "screenshot";
     padding: 10px;
     border:  0px;
     border-radius: 6px;
 
-    background-color: @transparent;
+    background-color: #f0f0f0;
     spacing: 0;
     children:  [mainbox];
     orientation: horizontal;
@@ -55,7 +52,7 @@ mainbox {
 message {
     color: @nord0;
     padding: 5;
-    border-color: @foreground;
+    border-color: @nord10;
     border:  0px 2px 2px 2px;
     background-color: @nord7;
 }
@@ -63,7 +60,7 @@ message {
 inputbar {
     color: @nord0;
     padding: 11px;
-    background-color: @nord5;
+    background-color: #ffffff;
 
     border: 1px;
     border-radius:  6px 6px 0px 0px;
@@ -84,7 +81,7 @@ listview {
     border-radius: 0px 0px 6px 6px;
     border-color: @nord10;
     border: 0px 1px 1px 1px;
-    background-color: rgba(236,239,244,0.95);
+    background-color: #ffffff;
     dynamic: false;
 }
 
@@ -93,8 +90,8 @@ element {
     vertical-align: 0.5;
     border-radius: 4px;
     background-color: transparent;
-    color: @foreground;
-    text-color: @nord1;
+    color: @nord10;
+    text-color: @nord0;
 }
 
 element selected.normal {
@@ -109,15 +106,15 @@ element-text, element-icon {
 
 button {
     padding: 6px;
-    color: @foreground;
+    color: @nord10;
     horizontal-align: 0.5;
 
     border: 2px 0px 2px 2px;
     border-radius: 4px 0px 0px 4px;
-    border-color: @foreground;
+    border-color: @nord10;
 }
 
 button selected normal {
     border: 2px 0px 2px 2px;
-    border-color: @foreground;
+    border-color: @nord10;
 }

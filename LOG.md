@@ -525,3 +525,56 @@ rofi -no-config -theme ~/.config/rofi/themes/nord-light.rasi -show drun -show-ic
 3. Нажать `Super + D` — Rofi должен стать светлым (белый/серый фон, тёмный текст).
 4. Повторное `Super + Shift + D` вернёт тёмную тему.
 
+## Доработка: чёткая светлая тема, скриншот без размытия и сразу в буфер обмена (2026-07-31)
+
+### Проблемы
+1. Пользователь всё ещё не видел разницы между тёмной и светлой темой Rofi.
+2. Скриншот области (`maim -s`) размывал экран при выделении.
+3. После скриншота файл сохранялся, но не копировался в буфер обмена — нельзя сразу `Ctrl+V`.
+4. Ошибки i3 нельзя скопировать из диалога `show errors`.
+
+### Исправления
+
+#### 1. Светлая тема Rofi — максимально контрастная
+- `nord-light.rasi` переписан: белый фон (`#ffffff`) для `listview` и `inputbar`, тёмный текст (`#2e3440`), без прозрачности `screenshot`.
+- Окно теперь имеет сплошной светлый фон `#f0f0f0`.
+- Разница с тёмной темой должна быть очевидна.
+
+#### 2. Скриншот без размытия
+- В `screenshot.sh` для режима `area` добавлен флаг `maim -s --shader=""`.
+- Это отключает шейдер slop, который по умолчанию затемнял/размывал фон при выделении области.
+
+#### 3. Скриншот сразу в буфер обмена
+- После успешного сохранения скриншота файл копируется в clipboard через `xclip`:
+  ```bash
+  [ -s "$out" ] && xclip -selection clipboard -t image/png < "$out" && \
+      notify-send "Screenshot" "Copied to clipboard"
+  ```
+- Работает для всех режимов: `full`, `area`, `delay5`, `delay10`.
+- После `Super + Shift + S` или `Print` можно сразу нажать `Ctrl + V` в любом приложении.
+
+#### 4. Копирование ошибок i3
+- Добавлена горячая клавиша `Super + Shift + H`:
+  ```
+  bindcode $mod+Shift+43 exec --no-startup-id sh -c "i3-dump-log | tail -n 50 | xclip -selection clipboard && notify-send 'i3 errors' 'Copied to clipboard'"
+  ```
+- Теперь можно нажать `Super + Shift + H`, и последние 50 строк лога i3 окажутся в буфере обмена.
+
+### Обновлённые файлы
+- `~/.config/rofi/themes/nord-light.rasi`
+- `~/.config/i3/scripts/screenshot.sh`
+- `~/.config/i3/config` (добавлен биндинг `Super + Shift + H`)
+- `~/.config/i3/scripts/keybindings.sh`
+- Синхронизировано в `/home/fedora/Documents/Code/X11/i3-fedora-ready/`
+
+### Проверка
+- `i3 -C -c ~/.config/i3/config` — OK.
+- `bash -n ~/.config/i3/scripts/screenshot.sh` — OK.
+- `rofi -no-config -theme ~/.config/rofi/themes/nord-light.rasi -show drun` — OK.
+
+### Что нужно сделать пользователю
+1. Перезагрузить i3: `Super + Shift + C`.
+2. Проверить `Super + Shift + D` → `Super + D` — Rofi должен быть белым/светлым.
+3. Проверить `Super + Shift + S` — экран не должен размываться, после выделения области скриншот скопирован в буфер; открой браузер/мессенджер и нажми `Ctrl + V`.
+4. Проверить `Super + Shift + H` — последние ошибки i3 скопируются в буфер обмена.
+

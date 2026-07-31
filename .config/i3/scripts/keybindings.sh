@@ -9,6 +9,7 @@ keybinds=$(cat <<'EOF'
   Super + Enter            →   Terminal (Kitty)
   Super + E                →   File manager (Thunar)
   Super + H                →   Show this keybindings list
+  Super + Shift + H        →   Copy last i3 errors to clipboard
   Super + ?                →   Welcome menu
   Super + Q                →   Close active window
   Super + Shift + Q        →   Kill active process
@@ -36,10 +37,10 @@ keybinds=$(cat <<'EOF'
   Super + Shift + C        →   Reload i3 config
   Super + Shift + R        →   Restart i3
   Super + W                →   Random wallpaper
-  Print                    →   Screenshot fullscreen (F6 as fallback)
-  Super + Shift + S        →   Screenshot area (Hyprland style)
-  Super + Print            →   Screenshot area
-  Super + Shift + Print    →   Screenshot area
+  Print                    →   Screenshot fullscreen + copy to clipboard (F6 fallback)
+  Super + Shift + S        →   Screenshot area + copy to clipboard (no blur)
+  Super + Print            →   Screenshot area + copy to clipboard
+  Super + Shift + Print    →   Screenshot area + copy to clipboard
   XF86 Volume Up/Down      →   Volume ±5%
   XF86 Mute                →   Toggle mute
   XF86 Mic Mute            →   Toggle mic mute

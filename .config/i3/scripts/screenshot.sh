@@ -4,10 +4,29 @@ mode="${1:-area}"
 mkdir -p "$HOME/Pictures/Screenshots"
 out="$HOME/Pictures/Screenshots/screenshot-$(date +%Y%m%d-%H%M%S).png"
 
+copy_clipboard() {
+    [ -s "$out" ] && xclip -selection clipboard -t image/png < "$out" && \
+        notify-send "Screenshot" "Copied to clipboard"
+}
+
 case "$mode" in
-    full)   maim "$out" ;;
-    area)   maim -s "$out" ;;
-    delay5) sleep 5; maim "$out" ;;
-    delay10) sleep 10; maim "$out" ;;
-    *)      echo "Usage: $0 {full|area|delay5|delay10}" >&2; exit 1 ;;
+    full)
+        maim "$out" && copy_clipboard
+        ;;
+    area)
+        # --shader="" disables the blur/dim overlay while selecting
+        maim -s --shader="" "$out" && copy_clipboard
+        ;;
+    delay5)
+        sleep 5
+        maim "$out" && copy_clipboard
+        ;;
+    delay10)
+        sleep 10
+        maim "$out" && copy_clipboard
+        ;;
+    *)
+        echo "Usage: $0 {full|area|delay5|delay10}" >&2
+        exit 1
+        ;;
 esac
