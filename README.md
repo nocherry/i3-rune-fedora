@@ -26,11 +26,11 @@ cd /home/fedora/Documents/Code/X11/i3-fedora-ready
 The installer:
 
 1. Backs up existing `~/.config/*` to `~/.config/i3-fedora-backup-<timestamp>`.
-2. Installs all packages via `dnf`.
+2. Installs all packages via `dnf` (uses `--skip-unavailable` for packages not in newer Fedora repos).
 3. Downloads and installs **JetBrainsMono Nerd Font**.
 4. Clones wallpapers to `~/Pictures/wallpapers`.
 5. Copies all configs to `~/.config/` and home dotfiles.
-6. Optionally installs GTK/icon themes and SDDM.
+6. Optionally installs GTK/icon themes and **SDDM with astronaut theme forced to X11** (avoids Wayland issues on X11-only i3 setups).
 7. Verifies `i3` config syntax.
 
 ## Keybindings
