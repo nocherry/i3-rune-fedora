@@ -59,6 +59,9 @@ exec --no-startup-id xsettingsd
 # Lock on suspend (only if xss-lock is installed)
 exec --no-startup-id sh -c "command -v xss-lock >/dev/null && xss-lock --transfer-sleep-lock -- i3lock -c #2e3440 || true"
 
+# Capture i3 log for error viewer
+exec --no-startup-id sh -c "mkdir -p ~/.local/share/i3 && i3-dump-log > ~/.local/share/i3/log 2>&1 &"
+
 # System tray applets
 exec --no-startup-id nm-applet
 exec --no-startup-id blueman-applet
@@ -66,6 +69,12 @@ exec --no-startup-id sh -c "command -v pasytray >/dev/null && pasytray &"
 
 # Notifications
 exec --no-startup-id dunst &
+
+# Clipboard manager (greenclip)
+exec --no-startup-id sh -c "command -v greenclip >/dev/null && greenclip daemon &"
+
+# Touchpad gestures (only if libinput-gestures is installed)
+exec --no-startup-id sh -c "command -v libinput-gestures-setup >/dev/null && libinput-gestures-setup start || true"
 
 # Wallpaper dirs
 exec --no-startup-id mkdir -p ~/Pictures/Screenshots
@@ -86,6 +95,8 @@ exec_always --no-startup-id picom --config ~/.config/picom/picom.conf
 ### Apps & Launchers
 # Use rofi.sh so toggle logic stays out of i3 config and works on RU/EN layouts
 bindcode $mod+40 exec --no-startup-id ~/.config/i3/scripts/rofi.sh
+# Clipboard history (works on both RU/EN layouts because bound by keycode)
+bindcode $mod+Shift+49 exec --no-startup-id sh -c "rofi -modi 'clipboard:greenclip print' -show clipboard -run-command '{cmd}'"
 # Toggle Rofi dark/light theme
 bindcode $mod+Shift+40 exec --no-startup-id ~/.config/rofi/scripts/toggle-theme.sh
 bindcode $mod+56 exec xdg-open "https://"
@@ -95,6 +106,10 @@ bindcode $mod+26 exec $files
 ### Help / Menus
 bindcode $mod+43 exec ~/.config/i3/scripts/keybindings.sh
 bindcode $mod+Shift+43 exec --no-startup-id sh -c "i3-dump-log | tail -n 50 | xclip -selection clipboard && notify-send 'i3 errors' 'Copied to clipboard'"
+# Control center (Hyprland-style top-bar quick settings)
+bindcode $mod+49 exec --no-startup-id ~/.config/i3/scripts/control-center.sh
+# i3 errors viewer in rofi
+bindcode $mod+Shift+26 exec --no-startup-id ~/.config/i3/scripts/errors-rofi.sh
 bindcode $mod+Shift+61 exec ~/.config/i3/scripts/welcome.sh --manual
 
 ### System / Session
@@ -205,13 +220,14 @@ bindcode $mod+Shift+72 exec --no-startup-id ~/.config/i3/scripts/screenshot.sh a
 bindcode $mod+Ctrl+72 exec --no-startup-id ~/.config/i3/scripts/screenshot.sh delay5
 
 ### Wallpapers (handles spaces in filenames)
-bindcode $mod+25 exec --no-startup-id ~/.config/i3/scripts/wallpaper.sh
+bindcode $mod+25 exec --no-startup-id ~/.config/i3/scripts/wallpaper-selector.sh
 
 ### Bar
 bindcode $mod+Ctrl+Mod1+56 exec --no-startup-id polybar-msg cmd toggle
 
 ### i3 control
-bindcode $mod+Shift+54 reload
+# Super+Shift+C — reload i3 config only if it is valid
+bindcode $mod+Shift+54 exec --no-startup-id ~/.config/i3/scripts/reload-safe.sh
 bindcode $mod+Shift+28 restart
 
 #

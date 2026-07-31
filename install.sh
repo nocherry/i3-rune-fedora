@@ -103,6 +103,21 @@ if ! command -v starship &>/dev/null; then
     curl -sS https://starship.rs/install.sh | sh -s -- -y || warn "Starship install failed (non-fatal)."
 fi
 
+# Install greenclip if missing (clipboard history manager, static binary)
+if ! command -v greenclip &>/dev/null; then
+    header "Installing greenclip"
+    mkdir -p "$HOME/.local/bin"
+    curl -L -o "$HOME/.local/bin/greenclip" https://github.com/erebe/greenclip/releases/download/v4.2/greenclip
+    chmod +x "$HOME/.local/bin/greenclip"
+    msg "greenclip installed to ~/.local/bin/greenclip"
+fi
+
+# Install libinput-gestures if available (optional, for touchpad gestures)
+if ! command -v libinput-gestures-setup &>/dev/null; then
+    header "Installing libinput-gestures (optional)"
+    sudo dnf install -y --skip-unavailable libinput-gestures || warn "libinput-gestures install failed (non-fatal)."
+fi
+
 # Clone wallpapers
 header "Wallpapers"
 if [ -d "$WALLPAPER_DIR" ]; then
@@ -217,7 +232,7 @@ else
 fi
 
 missing_pkgs=()
-for pkg in i3 polybar rofi picom dunst kitty thunar feh nm-applet blueman-applet pavucontrol brightnessctl maim playerctl i3lock; do
+for pkg in i3 polybar rofi picom dunst kitty thunar feh nm-applet blueman-applet pavucontrol brightnessctl maim playerctl i3lock xclip greenclip; do
     command -v "$pkg" &>/dev/null || missing_pkgs+=("$pkg")
 done
 
@@ -234,10 +249,14 @@ echo ""
 echo "Next steps:"
 echo "  1. Log out"
 echo "  2. Select 'i3' session (or run startx from TTY)"
-echo "  3. Super + Enter = Terminal (Kitty)"
-echo "  4. Super + D     = App menu (Rofi)"
-echo "  5. Super + Q     = Close window (works on RU too!)"
-echo "  6. Alt + Shift   = RU/EN keyboard"
+echo "  3. Super + Enter      = Terminal (Kitty)"
+echo "  4. Super + D          = App menu (Rofi)"
+echo "  5. Super + Shift + D  = Toggle dark/light Rofi theme"
+echo "  6. Super + \`         = Control center (quick settings)"
+echo "  7. Super + Shift + \` = Clipboard history"
+echo "  8. Super + W          = Select wallpaper"
+echo "  9. Super + Q          = Close window (works on RU too!)"
+echo "  10. Alt + Shift       = RU/EN keyboard"
 echo ""
 echo "If anything breaks:"
 echo "  cp -r $BACKUP_DIR/* ~/.config/"

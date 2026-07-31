@@ -5,11 +5,14 @@ THEME="$HOME/.config/rofi/themes/keybindings.rasi"
 keybinds=$(cat <<'EOF'
   Super + D                →   App launcher (Rofi with icons)
   Super + Shift + D        →   Toggle Rofi dark / light theme
+  Super + Shift + `        →   Clipboard history (greenclip + rofi)
   Super + B                →   Open browser
   Super + Enter            →   Terminal (Kitty)
   Super + E                →   File manager (Thunar)
   Super + H                →   Show this keybindings list
   Super + Shift + H        →   Copy last i3 errors to clipboard
+  Super + Shift + E        →   Show last i3 errors in Rofi
+  Super + `                →   Control center (quick settings)
   Super + ?                →   Welcome menu
   Super + Q                →   Close active window
   Super + Shift + Q        →   Kill active process
@@ -34,9 +37,9 @@ keybinds=$(cat <<'EOF'
   Super + Shift + U        →   Move window to scratchpad
   Super + R                →   Resize mode
   Super + Shift + G        →   Gaps mode
-  Super + Shift + C        →   Reload i3 config
+  Super + Shift + C        →   Reload i3 config (with validation)
   Super + Shift + R        →   Restart i3
-  Super + W                →   Random wallpaper
+  Super + W                →   Select wallpaper via Rofi
   Print                    →   Screenshot fullscreen + copy to clipboard (F6 fallback)
   Super + Shift + S        →   Screenshot area + copy to clipboard (no blur)
   Super + Print            →   Screenshot area + copy to clipboard
@@ -47,6 +50,11 @@ keybinds=$(cat <<'EOF'
   XF86 Brightness Up/Down  →   Brightness ±5%
   XF86 Audio Play/Next/Prev →   Media controls
   Alt + Tab                →   Cycle windows (rofi)
+  ---
+  Top bar (polybar)        →   Launcher, workspaces, date, system tray, battery, brightness, volume, network, CPU, RAM, power
+  Click launcher icon      →   Control center
+  Click power icon         →   Power menu
+  Scroll on brightness/volume → Adjust
 EOF
 )
 

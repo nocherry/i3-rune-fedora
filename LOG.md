@@ -578,3 +578,148 @@ rofi -no-config -theme ~/.config/rofi/themes/nord-light.rasi -show drun -show-ic
 3. Проверить `Super + Shift + S` — экран не должен размываться, после выделения области скриншот скопирован в буфер; открой браузер/мессенджер и нажми `Ctrl + V`.
 4. Проверить `Super + Shift + H` — последние ошибки i3 скопируются в буфер обмена.
 
+## Буфер обмена + Kitty copy/paste на RU/EN (2026-07-31)
+
+### Что сделано
+1. **Установлен `greenclip`** в `~/.local/bin/greenclip` (статический бинарь, без sudo).
+2. **Создан конфиг** `~/.config/greenclip.toml`.
+3. **Добавлен автозапуск демона** greenclip в i3 config.
+4. **Горячая клавиша истории буфера обмена:**
+   - `Super + Shift + \`` → открывает rofi со списком ранее скопированных текстов.
+   - Выбранный элемент сразу попадает в clipboard.
+   - Привязка через `bindcode` — работает на любой раскладке.
+5. **Kitty copy/paste на русской раскладке:**
+   - В `~/.config/kitty/kitty.conf` добавлены бинды на кириллические буквы:
+     ```
+     map ctrl+shift+c       copy_to_clipboard
+     map ctrl+shift+с       copy_to_clipboard
+     map ctrl+shift+v       paste_from_clipboard
+     map ctrl+shift+м       paste_from_clipboard
+     ```
+   - Теперь в Kitty `Ctrl+Shift+C/V` работает и на US, и на RU раскладке.
+6. **`install.sh` обновлён:**
+   - скачивает greenclip, если отсутствует;
+   - пытается поставить `libinput-gestures`;
+   - добавлен greenclip в список проверки.
+
+### Проверка
+- `i3 -C -c ~/.config/i3/config` — OK.
+- `kitty +runpy` — конфиг Kitty валиден.
+- `bash -n install.sh` — OK.
+
+### Что нужно сделать пользователю
+1. Перезагрузить i3: `Super + Shift + C`.
+2. Скопировать любой текст (`Ctrl+C` или выделить мышью).
+3. Нажать `Super + Shift + \`` — появится rofi с историей, выбрать текст.
+4. Проверить `Ctrl+Shift+C/V` в Kitty на русской раскладке.
+
+## Жесты тачпада (2026-07-31)
+
+### Что сделано
+- Найден тачпад: `ELAN1200:00 04F3:303E Touchpad`.
+- Создан `~/.config/libinput-gestures.conf`:
+  - 3 пальца влево → следующий воркспейс.
+  - 3 пальца вправо → предыдущий воркспейс.
+  - 3 пальца вверх → rofi window switcher.
+  - 3 пальца вниз → scratchpad.
+  - Тап 4 пальцами → скриншот области.
+  - Pinch out/in → громкость +/-.
+- В i3 autostart добавлен запуск `libinput-gestures-setup start` (условно, если установлен).
+
+### Ограничение
+- `libinput-gestures` не установлен в системе. Нужно поставить:
+  ```bash
+  sudo dnf install libinput-gestures
+  ```
+  Пользователь уже состоит в группе `input`, поэтому перелогин не нужен.
+
+### Проверка
+- Конфиг `~/.config/libinput-gestures.conf` создан.
+- `i3 -C -c ~/.config/i3/config` — OK.
+
+### Что нужно сделать пользователю
+1. Установить `sudo dnf install libinput-gestures`.
+2. Перезагрузить i3.
+3. Проверить жесты 3-4 пальцами.
+
+
+## Крупное обновление: Hyprland-style top bar + control center + wallpaper picker + error handling (2026-07-31)
+
+### Что сделано
+
+#### 1. Переработан polybar под стиль Hyprland waybar
+- Бар теперь **сверху**, **плавающий**, с **закруглением 12px** и полупрозрачным фоном.
+- Шрифт `JetBrainsMono Nerd Font Bold`.
+- Модули:
+  - **Слева:** `launcher` (иконка 󰀻) + `xworkspaces`.
+  - **Центр:** `date` (часы).
+  - **Справа:** `tray`, `battery`, `brightness`, `volume`, `network`, `cpu`, `memory`, `powermenu`.
+- Цветовые акценты как в Hyprland waybar:
+  - CPU — оранжевый
+  - RAM — зелёный
+  - Volume — фиолетовый
+  - Brightness — жёлтый
+  - Date — бирюзовый
+  - Battery — зелёный/жёлтый
+- Кликабельность:
+  - `launcher` → открывает control center.
+  - `powermenu` → открывает power menu.
+  - `volume` → scroll изменяет громкость, правый клик — `pavucontrol`.
+  - `brightness` → scroll изменяет яркость.
+
+Файл: `~/.config/polybar/config.ini`.
+
+#### 2. Control center — `Super + ``
+Новый скрипт `~/.config/i3/scripts/control-center.sh` открывает rofi-меню быстрых настроек:
+- WiFi toggle / settings
+- Bluetooth toggle / settings
+- Volume ± / Mute
+- Brightness ±
+- Screenshot area / full
+- Lock / Logout / Reboot / Shutdown
+- Toggle dark/light theme (Rofi)
+- Toggle polybar
+- Wallpaper random / select
+
+#### 3. Выбор обоев через rofi — `Super + W`
+- `~/.config/i3/scripts/wallpaper-selector.sh` показывает список обоев из `~/Pictures/wallpapers/`.
+- Пункты: `Random`, `Set as fallback`, и все файлы.
+- Старый `wallpaper.sh` остался для автозапуска и пункта Random.
+
+#### 4. Умный reload — `Super + Shift + C`
+- `~/.config/i3/scripts/reload-safe.sh` сначала проверяет `i3 -C`.
+- Если конфиг сломан — показывает `notify-send` и **не делает reload**.
+- Если всё ок — `i3-msg reload`.
+
+#### 5. Просмотр ошибок i3
+- `Super + Shift + H` — копирует последние 50 строк лога i3 в clipboard.
+- `Super + Shift + E` — открывает rofi с последними ошибками/предупреждениями.
+- На автозапуске фоном пишется `i3-dump-log > ~/.local/share/i3/log`.
+
+#### 6. Обои из Hyprland-Dots
+- Скопированы обои из `/home/fedora/Fedora-Hyprland/Hyprland-Dots/wallpapers/` в `~/Pictures/wallpapers/`.
+
+### Обновлённые файлы
+- `~/.config/polybar/config.ini`
+- `~/.config/i3/config`
+- `~/.config/i3/scripts/keybindings.sh`
+- `~/.config/i3/scripts/reload-safe.sh` (новый)
+- `~/.config/i3/scripts/wallpaper-selector.sh` (новый)
+- `~/.config/i3/scripts/control-center.sh` (новый)
+- `~/.config/i3/scripts/errors-rofi.sh` (новый)
+- Синхронизировано в `/home/fedora/Documents/Code/X11/i3-fedora-ready/`
+
+### Проверка
+- `i3 -C -c ~/.config/i3/config` — OK.
+- `polybar -c ~/.config/polybar/config.ini main` — загружается, все 11 модулей на месте.
+- `bash -n` на всех новых скриптах — OK.
+
+### Что нужно сделать пользователю
+1. Перезагрузить i3: `Super + Shift + C`.
+2. Polybar перезапустится автоматически (`exec_always` в i3 config).
+3. Проверить верхний бар: иконка лаунчера слева, воркспейсы, часы по центру, системные модули справа.
+4. Кликнуть на иконку лаунчера (󰀻) слева — откроется Control Center.
+5. `Super + W` — выбрать обои из списка.
+6. `Super + `` — открыть Control Center с клавиатуры.
+7. Проверить, что после `Super + Shift + S` скриншот копируется в буфер и экран не размывается.
+
