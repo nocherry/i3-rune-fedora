@@ -19,6 +19,7 @@ cp "$HOME/.config/polybar/colors-${next}.ini" "$HOME/.config/polybar/colors-curr
 
 # kitty terminal theme
 cp "$HOME/.config/kitty/theme-${next}.conf" "$HOME/.config/kitty/theme-current.conf"
+killall -USR1 kitty 2>/dev/null || true
 
 # rofi theme
 rofi_config="$HOME/.config/rofi/config.rasi"
