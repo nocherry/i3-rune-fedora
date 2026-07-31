@@ -1,0 +1,14 @@
+# Local backups
+.config.orig/
+*.orig
+*~
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Auto-generated fish state
+.config/fish/fish_variables

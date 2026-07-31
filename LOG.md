@@ -1,0 +1,345 @@
+# Лог адаптации i3 Arch → Fedora
+
+## 2026-07-31
+
+### Что сделано
+
+1. **Изучены оба репозитория**: `i3wmdotfiles-main` (Arch) и `i3-fedora-ready` (текущая Fedora-адаптация).
+2. **Создан `PLAN.md`** — пошаговый план переноса.
+3. **Создан `LOG.md`** — этот файл, для прозрачности решений.
+
+### Дополнительные пожелания пользователя
+
+- Перенести **обои/фото/видео** (клонировать `harilvfs/wallpapers`).
+- Установить **Nerd-шрифты** для корректных иконок в polybar/rofi/dunst/kitty.
+- Добавить **анимации** и визуальные эффекты, как в Hyprland.
+- Сделать **Kitty красивым** в консоли.
+- Сохранить **все взаимодействия** (welcome, powermenu, keybindings, трей).
+
+### Почему такие решения
+
+- **Тёмная тема Nord из Arch**: пользователь явно выбрал её в ответе на вопрос. Kitty остаётся Catppuccin Mocha, потому что именно такой `theme.conf` идёт в Arch-репо.
+- **Keycodes вместо bindsym для буквенных клавиш**: Arch-конфиг использует немецкий keysym `odiaeresis`, который не существует на US/RU раскладке. Keycodes (физические номера клавиш) работают независимо от языка.
+- **Kitty вместо Alacritty**: в Arch-репо уже есть полноценный kitty-конфиг, и пользователь выбрал "всё подряд". Kitty с padding + прозрачностью + cursor trail выглядит современно.
+- **Стандартный picom вместо форка с анимациями**: в Fedora нет готового пакета `picom-animations-git`, используем glx backend + тени/углы/blur/fade. Это максимально близко к Hyprland без сторонних форков.
+- **JetBrainsMono Nerd Font**: используется в i3, polybar, rofi, dunst. Стандартный `jetbrains-mono-fonts-all` не содержит Nerd-иконки, поэтому ставим рукой из релизов.
+- **brightnessctl вместо light**: в Fedora `brightnessctl` есть в репо, `light` может отсутствовать.
+- **flameshot вместо maim**: в Arch-конфиге используется flameshot, и он есть в Fedora.
+- **polkit-gnome-authentication-agent-1**: замена Arch `polkit-gnome` → Fedora `polkit-gnome`.
+- **Автоопределение батареи BAT0/BAT1 и адаптера ADP1/ACAD**: разные ноутбуки по-разному именуют power supply.
+- **SDDM опционально**: не включаем по умолчанию, чтобы не ломать текущий менеджер входа.
+
+### Копирование недостающих конфигов
+
+- Скопированы все дополнительные конфиги из Arch: `kitty`, `fish`, `nvim`, `tmux`, `zellij`, `fastfetch`, `gtk-3.0`, `Kvantum`, `qt5ct`, `qt6ct`, `xsettingsd`, `starship`, `.bashrc`, `.xinitrc`, `sddm`.
+- Скопированы скрипты i3 (`welcome.sh`, `powermenu.sh`, `i3exit.sh`, `keybindings.sh`) и темы rofi.
+- Сделан бэкап `.config.orig` перед изменениями.
+- Почему: пользователь выбрал "всё подряд", поэтому переносим всю экосистему, а не только i3.
+
+### Адаптация i3 config
+
+- Создан новый `~/.config/i3/config` на базе Arch-конфига.
+- Все буквенные bindsym заменены на keycodes (`bindcode`) — работает на RU/EN.
+- Стандартная vim-раскладка HJKL для фокуса и перемещения.
+- Super+; (keycode 47) вместо немецкого `odiaeresis` для фокуса вправо.
+- Автозапуск: `setxkbmap`, polkit-gnome, gnome-keyring, xsettingsd, nm-applet, blueman-applet, pasystray, dunst, feh, polybar, picom, welcome.sh.
+- Убран `dex` (нет в Fedora) и `xss-lock -- slock` (slock заменён на i3lock).
+- Floating rules для VPN (Hiddify/Happ) и системных диалогов.
+
+### Адаптация Polybar
+
+- Перекрашена в Nord dark палитру из Arch.
+- Бар переименован в `main`.
+- Добавлено автоопределение батареи/адаптера через переменные окружения в `launch.sh`.
+- Иконки Nerd Font для батареи, звука, CPU, памяти, яркости.
+
+### Адаптация Rofi / Picom / Dunst
+
+- Rofi использует `nord.rasi`, `launcher.rasi` перекрашен в Nord.
+- Picom: glx backend, тени, fade, blur kawase, rounded corners, прозрачность неактивных окон.
+- Dunst перекрашен в Nord-цвета.
+
+### Обновление вспомогательных скриптов
+
+- `keybindings.sh`: убраны `Ö`, заменён Alacritty на Kitty, добавлены resize/gaps пояснения.
+- `i3exit.sh`: lock падает на сплошной Nord-фон, если `bg.png` не найден.
+
+### Install script
+
+- Переписан `install.sh`: backup, dnf packages, Nerd Font, wallpapers, configs, permissions, optional SDDM, verification.
+- README переписан под новое состояние.
+
+### Адаптация i3 config — Hyprland keybindings
+
+- Найдена и проанализирована актуальная Hyprland-конфигурация пользователя: `~/.config/hypr/configs/Keybinds.conf`, `~/.config/hypr/UserConfigs/UserKeybinds.conf`, `~/.config/hypr/configs/Laptops.conf`.
+- Переписан `~/.config/i3/config` так, чтобы хоткеи максимально повторяли Hyprland (JaKooLit dots):
+  - `Super+D` — Rofi
+  - `Super+Enter` — Kitty
+  - `Super+E` — Thunar
+  - `Super+B` — браузер
+  - `Super+H` — keybindings help
+  - `Super+Q` — закрыть окно
+  - `Ctrl+Alt+L` — lock
+  - `Ctrl+Alt+P` — powermenu
+  - `Super+Tab` / `Super+Shift+Tab` — следующий/предыдущий воркспейс
+  - `Super+Shift+[` / `Super+Shift+]` — move to prev/next workspace
+  - `Super+U` / `Super+Shift+U` — scratchpad (аналог special workspace)
+  - Стрелки для фокуса/перемещения (как в Hyprland)
+  - F6 fallback для скриншотов на ноутбуках без Print
+- Все буквенные клавиши привязаны через `bindcode` (keycodes), чтобы работали на русской раскладке.
+- Сохранён режим `resize` (Super+R) и `gaps` (Super+Shift+G).
+
+### Polybar
+
+- Исправлена ошибка формата батареи: `format-charging` теперь использует `<label-charging>`, а не `<label>`.
+- Батарея и адаптер берутся из переменных окружения `POLYBAR_BATTERY` / `POLYBAR_ADAPTER` (автоопределение в `launch.sh`).
+- Запущена проверка: `polybar -c config.ini main` загружается без ошибок.
+
+### LightDM / SDDM
+
+- Пользователь использует LightDM (SDDM на Wayland ломал X11-сессии).
+- `install.sh` больше НЕ включает SDDM по умолчанию.
+- Добавлена проверка наличия `/usr/share/xsessions/i3.desktop` для LightDM.
+- SDDM + astronaut-theme оставлен опцией; при выборе шрифты темы копируются в `/usr/share/fonts/` и обновляется `fc-cache`.
+
+### Kvantum / SDDM
+
+- Проверено, что `Kvantum/Nord-Kvantum/` (kvconfig + svg) и `sddm/themes/sddm-astronaut-theme/` (со шрифтами в `Fonts/`) уже скопированы в `i3-fedora-ready/.config/`.
+- В `install.sh` добавлено копирование шрифтов SDDM-темы в `/usr/share/fonts/`.
+
+### Скриншоты и зависимости
+
+- У пользователя уже установлен `maim`, но не `flameshot`. Чтобы не добавлять лишний пакет, скриншоты переключены на `maim`.
+- Убран `xdotool` (не установлен) из скриптов скриншотов.
+- `install.sh` обновлён: убран `flameshot`, добавлены `maim`, `playerctl`, `thunar`.
+
+### LightDM / Polkit / WiFi / NVIDIA
+
+- Пользователь использует LightDM (SDDM на Wayland ломал X11). `install.sh` не трогает LightDM по умолчанию.
+- В `i3/config` политик-агент заменён на автоопределение: сначала `lxqt-policykit-agent` (уже установлен), fallback на `polkit-gnome-authentication-agent-1`.
+- WiFi-пароль: `nm-applet` + `gnome-keyring-daemon` должны сохранять пароль. Если будет запрашивать каждый раз — нужно включить "Connect automatically" и "Available to all users" в `nm-connection-editor`.
+- NVIDIA MX130 + Intel UHD 620: picom на glx может глючить; в README указан fallback на `xrender`.
+
+### Проверка
+
+- `bash -n install.sh` — OK.
+- `i3 -C -c ~/.config/i3/config` — OK, ошибок нет.
+- `polybar -c ~/.config/polybar/config.ini main` — загружается без ошибок.
+
+## Полный аудит железа и конфигов (2026-07-31)
+
+### 1. Железо
+
+| Компонент | Что нашлось | Риски |
+|-----------|-------------|-------|
+| CPU | Intel i5-8250U (Kaby Lake-R) | — |
+| GPU | Intel UHD 620 + NVIDIA MX130 | picom glx может глючить на старом Intel; fallback на xrender |
+| Дисплей | eDP-1 1920×1080 | — |
+| Батарея | BAT0, адаптер AC0 | polybar должен использовать AC0, не ADP1 |
+| Звук | PipeWire (PulseAudio-совместимый) | pactl работает, pavucontrol есть |
+| WiFi | wlp2s0 (ASUS) | пароль должен сохраняться через NetworkManager + gnome-keyring |
+| Bluetooth | hci0 (ASUS) | blueman-applet нужен для трея |
+| Тачпад | не виден в xinput | возможно, внешняя мышь или другой драйвер |
+
+### 2. Пакеты — проверка по факту
+
+**Уже установлены (проверено rpm):**
+i3, polybar, rofi, picom, dunst, kitty, feh, brightnessctl, maim, playerctl, xclip, xss-lock, i3lock, nwg-look, qt5ct, qt6ct, kvantum, jetbrains-mono-fonts, google-noto-emoji-fonts, papirus-icon-theme, btop, yad, git, unzip, curl, lxqt-policykit, bat, fastfetch.
+
+**Установлены, но под другими именами:**
+- `Thunar` (не `thunar`)
+- `network-manager-applet` (binary `nm-applet`)
+- `blueman` (binary `blueman-applet`)
+- `wget2-wget` (binary `wget`)
+
+**Отсутствуют (ставятся через install.sh):**
+`pasystray`, `fontawesome-fonts-web`, `starship` (ставим curl-скриптом), `fish`, `zoxide`, `eza`, `neovim`, `gnome-keyring`, `gnome-settings-daemon`, `polkit-gnome` (в репо нет — не нужен, есть lxqt-policykit), `slock` (заменяем на i3lock), `xautolock` (опционально).
+
+### 3. Найденные и устранённые проблемы
+
+#### 3.1 Picom
+- **Было:** deprecated `glx-no-stencil`, deprecated `:c` в `_GTK_FRAME_EXTENTS@:c`.
+- **Стало:** убраны deprecated-опции. Теперь `picom --diagnostics` показывает только информационный warning про EGL.
+- **Почему:** устаревшие опции вызывают warnings и могут ломаться в будущих версиях picom.
+
+#### 3.2 Polybar
+- **Было:** battery module использовал `<label>` вместо `<label-charging>` / `<label-discharging>` — polybar падал с ошибкой.
+- **Стало:** форматы исправлены. Батарея/адаптер берутся из `POLYBAR_BATTERY` / `POLYBAR_ADAPTER`, автоопределяемых в `launch.sh` (ищет `ADP|^AC`).
+- **Почему:** на твоём ноутбуке адаптер называется AC0, а не ADP1.
+
+#### 3.3 Dunst
+- **Было:** legacy `height = 100` и `offset = 12x42` — dunst ругался.
+- **Стало:** `height = (0, 100)` и `offset = (12, 42)`.
+- **Почему:** новый синтаксис dunst 1.12+, иначе каждый запуск будет спамить warnings.
+
+#### 3.4 Kitty
+- **Было:** `tabs.conf` существовал, но не подключался в `kitty.conf` (закомментирован).
+- **Стало:** `include tabs.conf` добавлен.
+- **Почему:** иначе кастомные табы/сплиты в Kitty не работали бы.
+
+#### 3.5 i3 config — автозапуск polkit
+- **Было:** жёстко прописан `/usr/libexec/polkit-gnome-authentication-agent-1`, а в Fedora у тебя `lxqt-policykit-agent`.
+- **Стало:** автоопределение — сначала lxqt, fallback на polkit-gnome.
+- **Почему:** иначе GUI-запросы пароля (пакетная установка, wifi, и т.д.) не показывались бы.
+
+#### 3.6 .xinitrc
+- **Было:** использовал `slock` и `xautolock`, которых нет в системе.
+- **Стало:** `i3lock` + условный `xautolock` (только если установлен).
+- **Почему:** startx из TTY не должен падать из-за отсутствующих программ.
+
+#### 3.7 .bashrc
+- **Было:** pacman/yay-алиасы, `nitch` в конце (не установлен), `install_bashrc_support` использовал `yum`.
+- **Стало:** pacman-алиасы заменены на dnf-эквиваленты, `nitch` вызывается только если найден, `install_bashrc_support` использует `dnf`.
+- **Почему:** без этого каждый запуск терминала выдавал бы ошибки.
+
+#### 3.8 install.sh
+- **Было:** неправильные имена пакетов (`thunar` вместо `Thunar`, `nm-applet` вместо `network-manager-applet` и т.д.), стarship не ставился (нет в репо), `wget` предполагался установленным.
+- **Стало:** имена исправлены, starship ставится через официальный curl-скрипт, используется `curl` для загрузок.
+- **Почему:** иначе `dnf install` падал бы на несуществующих пакетах.
+
+#### 3.10 install.sh — права на выполнение
+- **Было:** скрипт не был executable, пользователь получал `permission denied`.
+- **Стало:** `chmod +x install.sh`.
+- **Почему:** `bash ./install.sh` сработал бы без прав, но `./install.sh` требует `+x`.
+
+## Результаты запуска install.sh (2026-07-31)
+
+### Что прошло хорошо
+- Бэкап создан: `/home/fedora/.config/i3-fedora-backup-20260731-184420`
+- Конфиги успешно скопированы в `~/.config/`
+- Темы и иконки склонированы в `~/.themes` и `~/.icons`
+- `i3 -C -c ~/.config/i3/config` — OK
+- SDDM включён, astronaut-theme + шрифты установлены
+- Nerd Font, eza, themes/icons — установлены
+
+### Проблемы, обнаруженные при установке
+
+#### 1. `dnf install` упал из-за отсутствующих пакетов
+**Было:** `No match for argument: pasystray`, `xorg-x11-server-utils`, `fontawesome-fonts-web`.
+**Почему:** эти пакеты отсутствуют в репозиториях Fedora 43.
+**Исправлено в install.sh:** добавлен `--skip-unavailable`, убраны `pasystray` и `xorg-x11-server-utils`, убран `fontawesome-fonts-web`.
+
+#### 2. Polybar шрифт Font Awesome 6 Free не найден
+**Было:** в `polybar/config.ini` была ссылка на `font-1 = "Font Awesome 6 Free"`, которого нет в системе.
+**Исправлено:** убрана зависимость от Font Awesome 6, все иконки теперь берутся из JetBrainsMono Nerd Font.
+**Применено:** и в репозитории, и в `~/.config/polybar/config.ini` пользователя.
+
+#### 3. SDDM включён без принудительного X11
+**Было:** install.sh включил SDDM, но не добавил `DisplayServer=x11`. На твоём ноутбуке SDDM на Wayland раньше ломал X11-сессии.
+**Что нужно сделать:** вручную добавить X11-конфиг SDDM:
+```bash
+printf "[General]\nDisplayServer=x11\n" | sudo tee /etc/sddm.conf.d/x11.conf
+```
+Или, если хочешь вернуть LightDM:
+```bash
+sudo systemctl disable sddm
+sudo systemctl enable lightdm
+```
+
+### Следующие шаги для пользователя
+1. Выбрать и применить один из вариантов SDDM/X11 выше.
+2. Перезагрузиться.
+3. Войти в i3 (через SDDM или LightDM).
+4. Проверить: Super+Enter (Kitty), Super+D (Rofi), Super+Q, Alt+Shift.
+5. Если SDDM всё ещё ломается — переключиться обратно на LightDM.
+6. WiFi: открыть `nm-connection-editor`, включить "Connect automatically" и "Store password for all users".
+
+
+1. **WiFi пароль:** открыть `nm-connection-editor`, выбрать сеть → редактировать → включить "Connect automatically" и "Store the password for all users".
+2. **Обои:** после `install.sh` выполнить `git clone https://github.com/harilvfs/wallpapers ~/Pictures/wallpapers` (или installer сделает это сам).
+3. **Темы/иконки:** installer предложит склонировать `harilvfs/themes` и `harilvfs/icons` в `~/.themes` и `~/.icons`. После этого выбрать их через `nwg-look` или `lxappearance`.
+4. **NVIDIA:** если нужен NVIDIA-рендеринг в X11, убедиться, что установлен `xorg-x11-drv-nvidia` (обычно ставится вместе с `akmod-nvidia`). Для чисто десктопного i3 достаточно Intel.
+5. **Анимации:** стандартный picom в Fedora не поддерживает "Hyprland-анимации" (форк `picom-animations`). Используемые тени/fade/blur — максимум без стороннего форка.
+
+### 5. Финальные команды проверки
+
+```bash
+cd /home/fedora/Documents/Code/X11/i3-fedora-ready
+
+bash -n install.sh
+i3 -C -c .config/i3/config
+polybar -c .config/polybar/config.ini main
+picom --config .config/picom/picom.conf --diagnostics
+timeout 3 dunst -config .config/dunst/dunstrc --print
+for f in .config/i3/scripts/*.sh; do bash -n "$f"; done
+```
+
+## Ошибки после первого запуска i3 и их исправление (2026-07-31)
+
+### Ошибка 1: `Super + D` не работает
+
+**Текст ошибки:**
+```
+The configured command for this shortcut could not be run successfully.
+ERROR: Expected one of these tokens: <end>
+ERROR: Your command: exec pkill rofi || rofi -show drun -modi drun,filebrowser,run,window
+```
+
+**Причина:** i3 не понимает `||` внутри `exec`. Команда `exec pkill rofi || rofi ...` парсится как два отдельных выражения.
+
+**Исправление:** завернуть команду в `sh -c`:
+```
+bindcode $mod+40 exec --no-startup-id sh -c 'pkill rofi || rofi -show drun -modi drun,filebrowser,run,window'
+```
+
+**Где исправлено:**
+- `~/.config/i3/config`
+- `/home/fedora/Documents/Code/X11/i3-fedora-ready/.config/i3/config`
+
+### Ошибка 2: чёрный экран вместо обоев
+
+**Причина:** в автозапуске использовалась команда:
+```
+feh --randomize --bg-fill ~/Pictures/wallpapers/*
+```
+В `~/Pictures/wallpapers/` есть файлы с пробелами в именах (например, `Abstract - Nature.jpg`). Shell разбивает такие имена по пробелам, и `feh` получает куски имён вместо целых файлов — поэтому обои не ставятся, экран чёрный.
+
+**Исправление:** использовать `find` + `shuf` и брать один файл в кавычках:
+```
+sh -c 'wp=$(find ~/Pictures/wallpapers -type f 2>/dev/null | shuf -n 1); [ -n "$wp" ] && feh --bg-fill --no-fehbg "$wp" || feh --bg-fill --no-fehbg ~/.config/i3/wallpaper.png'
+```
+
+То же самое исправлено для `Super + W` (случайные обои).
+
+**Где исправлено:**
+- `~/.config/i3/config`
+- `/home/fedora/Documents/Code/X11/i3-fedora-ready/.config/i3/config`
+
+### Ошибка 3: pasystray не найден
+
+**Причина:** в автозапуске был `exec --no-startup-id pasystray`, но пакет не установлен (его нет в репах Fedora 43). Это давало ошибку при старте.
+
+**Исправление:** сделать запуск условным:
+```
+exec --no-startup-id sh -c "command -v pasytray >/dev/null && pasytray &"
+```
+
+**Где исправлено:**
+- `~/.config/i3/config`
+- `/home/fedora/Documents/Code/X11/i3-fedora-ready/.config/i3/config`
+- `/home/fedora/Documents/Code/X11/i3-fedora-ready/install.sh`
+
+### Что нужно сделать пользователю
+
+1. Нажать `Super + Shift + C` для перезагрузки конфига i3.
+2. Проверить `Super + D` — должен открыться Rofi.
+3. Обои должны появиться сразу после reload (или после нового входа).
+4. Если обои не появились — нажать `Super + W`.
+
+## Подготовка к публикации на GitHub
+
+- Создан git-репозиторий в `/home/fedora/Documents/Code/X11/i3-fedora-ready`.
+- Добавлен `.gitignore` (исключаются бэкапы `.config.orig`, `*.log`, личные файлы).
+- Сделан начальный commit.
+
+**Для публикации на GitHub нужно выполнить вручную:**
+1. Создать новый репозиторий на https://github.com/new (без README и .gitignore).
+2. Скопировать URL (например, `https://github.com/USERNAME/i3-fedora-ready.git`).
+3. Выполнить в терминале:
+```bash
+cd /home/fedora/Documents/Code/X11/i3-fedora-ready
+git remote add origin https://github.com/USERNAME/i3-fedora-ready.git
+git branch -M main
+git push -u origin main
+```
+

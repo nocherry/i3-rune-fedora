@@ -1,0 +1,270 @@
+font pango:JetBrainsMono Nerd Font 10
+
+# combination keybind
+set $mod Mod4
+
+# Terminal, file manager, browser
+set $term kitty
+set $files thunar
+
+# Use Mouse+$mod to drag floating windows
+floating_modifier $mod
+
+# move tiling windows via drag & drop
+tiling_drag modifier titlebar
+
+##START THEMING WM
+
+    # Nord window color settings
+    # class                 border  backgr. text    indicator
+    client.focused          #81a1c1 #81a1c1 #ffffff #81a1c1
+    client.unfocused        #2e3440 #1f222d #888888 #1f222d
+    client.focused_inactive #2e3440 #1f222d #888888 #1f222d
+    client.placeholder      #2e3440 #1f222d #888888 #1f222d
+    client.urgent           #900000 #900000 #ffffff #900000
+    client.background       #242424
+
+# Borders & Gaps
+for_window [class="^.*"] border pixel 2
+gaps inner 8
+gaps outer 4
+smart_gaps inverse_outer
+
+# Floating windows
+for_window [class="gnome-calculator"] floating enable
+for_window [class="Pavucontrol"] floating enable
+for_window [class="Nm-connection-editor"] floating enable
+for_window [class="Hiddify"] floating enable
+for_window [class="happ"] floating enable
+for_window [class="Happ"] floating enable
+for_window [title="Hiddify"] floating enable
+for_window [class="org.gnome.Nautilus" instance="file_progress"] floating enable
+
+#
+#  AUTOSTART
+#
+
+# Keyboard layout: US/RU with Alt+Shift toggle
+exec --no-startup-id setxkbmap -layout us,ru -option grp:alt_shift_toggle
+
+# PolicyKit agent (use whichever is installed)
+exec --no-startup-id sh -c "command -v /usr/libexec/lxqt-policykit-agent >/dev/null && /usr/libexec/lxqt-policykit-agent || command -v /usr/libexec/polkit-gnome-authentication-agent-1 >/dev/null && /usr/libexec/polkit-gnome-authentication-agent-1 || true"
+
+# Keyring daemon
+exec --no-startup-id gnome-keyring-daemon --start --components=secrets
+
+# xsettingsd
+exec --no-startup-id xsettingsd
+
+# Lock on suspend (only if xss-lock is installed)
+exec --no-startup-id sh -c "command -v xss-lock >/dev/null && xss-lock --transfer-sleep-lock -- i3lock -c #2e3440 || true"
+
+# System tray applets
+exec --no-startup-id nm-applet
+exec --no-startup-id blueman-applet
+exec --no-startup-id sh -c "command -v pasytray >/dev/null && pasytray &"
+
+# Notifications
+exec --no-startup-id dunst &
+
+# Wallpaper dir + fallback wallpaper (handles spaces in filenames)
+exec --no-startup-id mkdir -p ~/Pictures/Screenshots
+exec --no-startup-id mkdir -p ~/Pictures/wallpapers
+exec --no-startup-id sh -c 'wp=$(find ~/Pictures/wallpapers -type f 2>/dev/null | shuf -n 1); [ -n "$wp" ] && feh --bg-fill --no-fehbg "$wp" || feh --bg-fill --no-fehbg ~/.config/i3/wallpaper.png'
+
+# Compositor & bar
+exec_always --no-startup-id ~/.config/polybar/launch.sh
+exec_always --no-startup-id picom --config ~/.config/picom/picom.conf
+
+#
+#  KEYBINDINGS — mapped from Hyprland JaKooLit config
+#  All letter keys use keycodes so they work on RU/EN layouts.
+#
+
+### Apps & Launchers
+bindcode $mod+40 exec --no-startup-id sh -c 'pkill rofi || rofi -show drun -modi drun,filebrowser,run,window'
+bindcode $mod+56 exec xdg-open "https://"
+bindcode $mod+36 exec $term;focus
+bindcode $mod+26 exec $files
+
+### Help / Menus
+bindcode $mod+43 exec ~/.config/i3/scripts/keybindings.sh
+bindcode $mod+Shift+61 exec ~/.config/i3/scripts/welcome.sh --manual
+
+### System / Session
+bindsym Ctrl+Mod1+Delete exec ~/.config/i3/scripts/i3exit.sh logout
+bindcode $mod+24 kill
+bindsym Ctrl+Mod1+l exec ~/.config/i3/scripts/i3exit.sh lock
+bindsym Ctrl+Mod1+p exec ~/.config/i3/scripts/powermenu.sh
+
+### Window state
+bindcode $mod+41 fullscreen toggle
+bindcode $mod+Shift+41 exec --no-startup-id i3-msg fullscreen toggle global
+bindcode $mod+65 floating toggle
+bindcode $mod+Mod1+65 exec --no-startup-id i3-msg 'floating enable' # float all-ish: enable floating for focused
+
+### Focus (arrow keys)
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+### Move window (arrow keys)
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+
+### Layout
+bindcode $mod+55 split v
+bindcode $mod+Shift+55 split h
+bindcode $mod+38 focus parent
+
+### Scratchpad (Hyprland special workspace equivalent)
+bindcode $mod+30 scratchpad show
+bindcode $mod+Shift+30 move scratchpad
+
+### Workspaces
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
+
+# switch to workspace
+bindsym $mod+1 workspace number $ws1
+bindsym $mod+2 workspace number $ws2
+bindsym $mod+3 workspace number $ws3
+bindsym $mod+4 workspace number $ws4
+bindsym $mod+5 workspace number $ws5
+bindsym $mod+6 workspace number $ws6
+bindsym $mod+7 workspace number $ws7
+bindsym $mod+8 workspace number $ws8
+bindsym $mod+9 workspace number $ws9
+bindsym $mod+0 workspace number $ws10
+
+# move container to workspace
+bindsym $mod+Shift+1 move container to workspace number $ws1
+bindsym $mod+Shift+2 move container to workspace number $ws2
+bindsym $mod+Shift+3 move container to workspace number $ws3
+bindsym $mod+Shift+4 move container to workspace number $ws4
+bindsym $mod+Shift+5 move container to workspace number $ws5
+bindsym $mod+Shift+6 move container to workspace number $ws6
+bindsym $mod+Shift+7 move container to workspace number $ws7
+bindsym $mod+Shift+8 move container to workspace number $ws8
+bindsym $mod+Shift+9 move container to workspace number $ws9
+bindsym $mod+Shift+0 move container to workspace number $ws10
+
+# next/previous workspace (Hyprland Super+Tab / Super+Shift+Tab)
+bindcode $mod+23 workspace next
+bindcode $mod+Shift+23 workspace prev
+
+# Super+comma / Super+period = prev / next workspace
+bindcode $mod+59 workspace prev
+bindcode $mod+60 workspace next
+
+# Super+Shift+bracket = move to prev/next workspace
+bindcode $mod+Shift+34 workspace prev
+bindcode $mod+Shift+35 workspace next
+
+### Audio
+bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
+bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
+bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
+bindsym XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
+bindsym XF86AudioPlay exec playerctl play-pause
+bindsym XF86AudioNext exec playerctl next
+bindsym XF86AudioPrev exec playerctl previous
+
+### Brightness
+bindsym XF86MonBrightnessUp exec brightnessctl set +5%
+bindsym XF86MonBrightnessDown exec brightnessctl set 5%-
+
+### Screenshots (maim — already installed)
+bindcode $mod+107 exec --no-startup-id maim ~/Pictures/Screenshots/screenshot-$(date +%Y%m%d-%H%M%S).png
+bindcode $mod+Shift+107 exec --no-startup-id maim -s ~/Pictures/Screenshots/screenshot-$(date +%Y%m%d-%H%M%S).png
+bindcode $mod+Ctrl+107 exec --no-startup-id sh -c "sleep 5; maim ~/Pictures/Screenshots/screenshot-$(date +%Y%m%d-%H%M%S).png"
+bindcode $mod+Mod1+107 exec --no-startup-id sh -c "sleep 10; maim ~/Pictures/Screenshots/screenshot-$(date +%Y%m%d-%H%M%S).png"
+
+# F6 fallback screenshots for laptops without Print key
+bindcode $mod+72 exec --no-startup-id maim ~/Pictures/Screenshots/screenshot-$(date +%Y%m%d-%H%M%S).png
+bindcode $mod+Shift+72 exec --no-startup-id maim -s ~/Pictures/Screenshots/screenshot-$(date +%Y%m%d-%H%M%S).png
+bindcode $mod+Ctrl+72 exec --no-startup-id sh -c "sleep 5; maim ~/Pictures/Screenshots/screenshot-$(date +%Y%m%d-%H%M%S).png"
+
+### Wallpapers (handles spaces in filenames)
+bindcode $mod+25 exec --no-startup-id sh -c 'feh --randomize --bg-fill --no-fehbg "$(find ~/Pictures/wallpapers -type f | shuf -n 1)"'
+
+### Bar
+bindcode $mod+Ctrl+Mod1+56 exec --no-startup-id polybar-msg cmd toggle
+
+### i3 control
+bindcode $mod+Shift+54 reload
+bindcode $mod+Shift+28 restart
+
+#
+#  RESIZE MODE (Super+R)
+#
+mode "resize" {
+    bindcode 43 resize shrink width 10 px or 10 ppt
+    bindcode 44 resize grow height 10 px or 10 ppt
+    bindcode 45 resize shrink height 10 px or 10 ppt
+    bindcode 46 resize grow width 10 px or 10 ppt
+
+    bindsym Left resize shrink width 10 px or 10 ppt
+    bindsym Down resize grow height 10 px or 10 ppt
+    bindsym Up resize shrink height 10 px or 10 ppt
+    bindsym Right resize grow width 10 px or 10 ppt
+
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+    bindcode $mod+27 mode "default"
+}
+
+# Enter resize mode
+bindcode $mod+27 mode "resize"
+
+#
+#  GAPS MODE (Super+Shift+G)
+#
+set $mode_gaps Gaps: (o) outer, (i) inner
+set $mode_gaps_outer Outer Gaps: +|-|0 (local), Shift + +|-|0 (global)
+set $mode_gaps_inner Inner Gaps: +|-|0 (local), Shift + +|-|0 (global)
+bindcode $mod+Shift+42 mode "$mode_gaps"
+
+mode "$mode_gaps" {
+    bindcode 32    mode "$mode_gaps_outer"
+    bindcode 31    mode "$mode_gaps_inner"
+    bindcode 36    mode "default"
+    bindcode 9     mode "default"
+}
+
+mode "$mode_gaps_inner" {
+    bindcode 21 gaps inner current plus 5
+    bindcode 20 gaps inner current minus 5
+    bindcode 19 gaps inner current set 0
+
+    bindcode Shift+21 gaps inner all plus 5
+    bindcode Shift+20 gaps inner all minus 5
+    bindcode Shift+19 gaps inner all set 0
+
+    bindcode 36 mode "default"
+    bindcode 9  mode "default"
+}
+
+mode "$mode_gaps_outer" {
+    bindcode 21 gaps outer current plus 5
+    bindcode 20 gaps outer current minus 5
+    bindcode 19 gaps outer current set 0
+
+    bindcode Shift+21 gaps outer all plus 5
+    bindcode Shift+20 gaps outer all minus 5
+    bindcode Shift+19 gaps outer all set 0
+
+    bindcode 36 mode "default"
+    bindcode 9  mode "default"
+}
