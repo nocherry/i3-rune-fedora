@@ -14,7 +14,13 @@ case "$mode" in
         maim "$out" && copy_clipboard
         ;;
     area)
-        maim -s "$out" && copy_clipboard
+        # ponytail: maim -s needs slop; if missing, fall back to full screen
+        if command -v slop >/dev/null 2>&1; then
+            maim -s "$out" && copy_clipboard
+        else
+            notify-send "Screenshot" "slop not installed; using full screen"
+            maim "$out" && copy_clipboard
+        fi
         ;;
     delay5)
         sleep 5
