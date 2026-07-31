@@ -55,7 +55,7 @@ echo "  Backup saved to: $BACKUP_DIR"
 header "Installing packages"
 sudo dnf install -y --skip-unavailable \
     i3 polybar rofi picom dunst kitty thunar feh nitrogen \
-    network-manager-applet blueman pavucontrol brightnessctl maim slop playerctl \
+    network-manager-applet blueman pavucontrol brightnessctl maim flameshot playerctl \
     xorg-x11-server-Xorg xorg-x11-xinit xrandr xset xsetroot \
     gnome-keyring gnome-settings-daemon lxqt-policykit \
     neovim btop fastfetch fish zoxide eza yad xclip xss-lock i3lock \

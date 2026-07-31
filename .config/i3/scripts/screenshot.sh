@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# ponytail: simple maim wrapper with modes; RU/EN-safe because called from keycodes
+# ponytail: screenshot wrapper; area mode uses flameshot (frozen screen + select)
 mode="${1:-area}"
 mkdir -p "$HOME/Pictures/Screenshots"
 out="$HOME/Pictures/Screenshots/screenshot-$(date +%Y%m%d-%H%M%S).png"
@@ -14,8 +14,9 @@ case "$mode" in
         maim "$out" && copy_clipboard
         ;;
     area)
-        # ponytail: bright opaque border so the selection stays visible without picom blur
-        maim -s -c 0.2,0.6,1,1 -b 3 "$out" && copy_clipboard
+        # flameshot captures screen first, shows frozen overlay, then selects.
+        # -s = accept on selection (no editor), -p = save path, -c = copy to clipboard.
+        flameshot gui -p "$out" -c -s
         ;;
     delay5)
         sleep 5
