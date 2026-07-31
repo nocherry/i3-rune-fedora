@@ -328,22 +328,33 @@ exec --no-startup-id sh -c "command -v pasytray >/dev/null && pasytray &"
 
 ## Ошибка 4: обои всё ещё не ставятся автоматически
 
-**Причина:** внутри `sh -c '...'` использовался `~` вместо `$HOME`. В одинарных кавычках `~` не разворачивается в домашнюю директорию, поэтому `find ~/Pictures/wallpapers` искал буквальный путь `~/Pictures/wallpapers`, который не существует. Команда молча возвращала пустой результат, и `feh` не получал файл.
+**Причина:** внутри `sh -c '...'` использовался `~` вместо `$HOME`. В одинарных кавычках `~` не разворачивается в домашнюю директорию, поэтому `find ~/Pictures/wallpapers` искал буквальный путь `~/Pictures/wallpapers`, который не существует.
 
-**Исправление:** заменить `~/Pictures/wallpapers` и `~/.config/i3/wallpaper.png` на `$HOME/...` внутри `sh -c`:
-```
-sh -c 'wp=$(find "$HOME/Pictures/wallpapers" -type f 2>/dev/null | shuf -n 1); [ -n "$wp" ] && feh --bg-fill --no-fehbg "$wp" || feh --bg-fill --no-fehbg "$HOME/.config/i3/wallpaper.png"'
+**Исправление:** вместо хрупких inline-команд создан отдельный скрипт `~/.config/i3/scripts/wallpaper.sh`. Он корректно работает с пробелами в именах файлов и падает на fallback-обои.
+
+Содержимое `wallpaper.sh`:
+```bash
+#!/usr/bin/env bash
+WALLPAPER_DIR="$HOME/Pictures/wallpapers"
+FALLBACK="$HOME/.config/i3/wallpaper.png"
+wp=$(find "$WALLPAPER_DIR" -type f 2>/dev/null | shuf -n 1)
+[ -n "$wp" ] && feh --bg-fill --no-fehbg "$wp" || feh --bg-fill --no-fehbg "$FALLBACK"
 ```
 
-То же самое для `Super + W`.
+i3 config теперь вызывает:
+```
+exec --no-startup-id ~/.config/i3/scripts/wallpaper.sh
+```
 
 **Где исправлено:**
-- `~/.config/i3/config`
+- `/home/fedora/Documents/Code/X11/i3-fedora-ready/.config/i3/scripts/wallpaper.sh` (новый файл)
 - `/home/fedora/Documents/Code/X11/i3-fedora-ready/.config/i3/config`
+- `~/.config/i3/scripts/wallpaper.sh`
+- `~/.config/i3/config`
 
 **Проверка:**
 ```bash
-sh -c 'wp=$(find "$HOME/Pictures/wallpapers" -type f 2>/dev/null | shuf -n 1); [ -n "$wp" ] && feh --bg-fill --no-fehbg "$wp" || feh --bg-fill --no-fehbg "$HOME/.config/i3/wallpaper.png"'
+~/.config/i3/scripts/wallpaper.sh
 ```
 
 ## Проверка SDDM (подтверждено пользователем)
@@ -357,6 +368,83 @@ sh -c 'wp=$(find "$HOME/Pictures/wallpapers" -type f 2>/dev/null | shuf -n 1); [
 - Создан git-репозиторий в `/home/fedora/Documents/Code/X11/i3-fedora-ready`.
 - Добавлен `.gitignore` (исключаются бэкапы `.config.orig`, `*.log`, личные файлы).
 - Сделан начальный commit.
+
+## Исправление: Super+D и Super+Shift+S не работают (2026-07-31)
+
+### Проблема
+- `Super + D` — не открывает Rofi, i3 показывает "show errors".
+- `Super + Shift + S` — не делает скриншот области.
+- Пользователь просит, чтобы все хоткеи работали и на русской раскладке.
+
+### Причина
+- `Super + D`: команда `exec --no-startup-id sh -c 'pkill rofi || rofi ...'` в принципе правильная, но `||` внутри `exec` исторически вызывал проблемы с i3 command parser, и пользователь продолжал видеть ошибки. Кроме того, inline-команды со спецсимволами сложно отлаживать.
+- `Super + Shift + S`: этот Hyprland-хоткей вообще не был добавлен в i3 config.
+- Русская раскладка: для переключения языка используется `setxkbmap us,ru` с `grp:alt_shift_toggle`. В i3 буквенные keysyms (`bindsym $mod+d`) зависят от текущей раскладки, поэтому на русском они не срабатывают. Keycodes (`bindcode <keycode>`) используют физические номера клавиш и не зависят от языка.
+
+### Исправление
+1. **Вынес toggle-логику Rofi в отдельный скрипт** `~/.config/i3/scripts/rofi.sh`:
+   ```bash
+   if pgrep -x rofi >/dev/null 2>&1; then
+       pkill -x rofi
+   else
+       rofi -show drun -modi drun,filebrowser,run,window
+   fi
+   ```
+   i3 теперь вызывает просто:
+   ```
+   bindcode $mod+40 exec --no-startup-id ~/.config/i3/scripts/rofi.sh
+   ```
+
+2. **Создан `~/.config/i3/scripts/screenshot.sh`** для maim:
+   ```bash
+   mode="${1:-area}"
+   mkdir -p "$HOME/Pictures/Screenshots"
+   out="$HOME/Pictures/Screenshots/screenshot-$(date +%Y%m%d-%H%M%S).png"
+   case "$mode" in
+       full)    maim "$out" ;;
+       area)    maim -s "$out" ;;
+       delay5)  sleep 5; maim "$out" ;;
+       delay10) sleep 10; maim "$out" ;;
+   esac
+   ```
+   Биндинги:
+   - `Print` → `screenshot.sh full`
+   - `Super + Shift + Print` / `Super + Print` / `Super + Shift + S` → `screenshot.sh area`
+   - `Super + Ctrl + Print` → `screenshot.sh delay5`
+   - `F6` fallback → `screenshot.sh full`
+
+3. **Все буквенные клавиши привязаны через `bindcode`**, что гарантирует работу на RU/EN:
+   - `Super+D` → keycode 40
+   - `Super+Shift+S` → keycode 39 + Shift
+   - `Super+Q` → keycode 24
+   - `Super+E` → keycode 26
+   - `Super+B` → keycode 56
+   - `Super+H` → keycode 43
+   - `Super+F` → keycode 41
+   - `Super+R` (resize mode) → keycode 27
+   - `Super+U` (scratchpad) → keycode 30
+   - и т.д.
+
+4. **Обновлён `keybindings.sh`** — добавлена строка `Super + Shift + S → Screenshot area (Hyprland style)`.
+
+5. **Убран дублирующийся комментарий** `### Wallpapers (random)`.
+
+### Проверка
+- `i3 -C -c ~/.config/i3/config` — OK.
+- `i3 -C -c /home/fedora/Documents/Code/X11/i3-fedora-ready/.config/i3/config` — OK.
+- `bash -n ~/.config/i3/scripts/rofi.sh` — OK.
+- `bash -n ~/.config/i3/scripts/screenshot.sh` — OK.
+
+### Что нужно сделать пользователю
+1. Перезагрузить i3 конфиг: `Super + Shift + C`.
+2. Проверить `Super + D` — должен открыться Rofi.
+3. Проверить `Super + Shift + S` — курсор должен измениться на крестик для выделения области.
+4. Проверить эти же хоткеи после переключения на русскую раскладку (`Alt + Shift`).
+
+### Про ошибки i3
+Если снова появится "show errors":
+- Из него нельзя скопировать текст — это просто диалог i3-nagbar.
+- Полный лог i3 можно посмотреть командой: `i3-dump-log | tail -n 50`.
 
 **Для публикации на GitHub нужно выполнить вручную:**
 1. Создать новый репозиторий на https://github.com/new (без README и .gitignore).
