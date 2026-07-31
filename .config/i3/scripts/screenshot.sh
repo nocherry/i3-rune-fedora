@@ -14,8 +14,8 @@ case "$mode" in
         maim "$out" && copy_clipboard
         ;;
     area)
-        # ponytail: area selection requires slop; install it via install.sh
-        maim -s "$out" && copy_clipboard
+        # ponytail: bright opaque border so the selection stays visible without picom blur
+        maim -s -c 0.2,0.6,1,1 -b 3 "$out" && copy_clipboard
         ;;
     delay5)
         sleep 5
