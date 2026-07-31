@@ -142,6 +142,9 @@ chmod +x "$HOME/.config/polybar/launch.sh"
 chmod +x "$HOME/.config/polybar/brightness.sh"
 chmod +x "$HOME/.xinitrc" 2>/dev/null || true
 
+# Initialize theme state to dark if not present
+[ -f "$HOME/.config/i3/theme-state" ] || echo "dark" > "$HOME/.config/i3/theme-state"
+
 # Copy local wallpapers to fallback location and wallpaper dir
 if [ -f "$REPO_DIR/wallpaper.png" ]; then
     mkdir -p "$HOME/.config/i3"

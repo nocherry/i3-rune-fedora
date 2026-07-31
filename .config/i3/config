@@ -17,12 +17,7 @@ tiling_drag modifier titlebar
 
     # Nord window color settings
     # class                 border  backgr. text    indicator
-    client.focused          #81a1c1 #81a1c1 #ffffff #81a1c1
-    client.unfocused        #2e3440 #1f222d #888888 #1f222d
-    client.focused_inactive #2e3440 #1f222d #888888 #1f222d
-    client.placeholder      #2e3440 #1f222d #888888 #1f222d
-    client.urgent           #900000 #900000 #ffffff #900000
-    client.background       #242424
+    include ~/.config/i3/theme-current.conf
 
 # Borders & Gaps
 for_window [class="^.*"] border pixel 2
@@ -97,8 +92,8 @@ exec_always --no-startup-id picom --config ~/.config/picom/picom.conf
 bindcode $mod+40 exec --no-startup-id ~/.config/i3/scripts/rofi.sh
 # Clipboard history (works on both RU/EN layouts because bound by keycode)
 bindcode $mod+Shift+49 exec --no-startup-id sh -c "rofi -modi 'clipboard:greenclip print' -show clipboard -run-command '{cmd}'"
-# Toggle Rofi dark/light theme
-bindcode $mod+Shift+40 exec --no-startup-id ~/.config/rofi/scripts/toggle-theme.sh
+# Toggle global dark/light theme
+bindcode $mod+Shift+40 exec --no-startup-id ~/.config/i3/scripts/theme-toggle.sh
 bindcode $mod+56 exec xdg-open "https://"
 bindcode $mod+36 exec $term;focus
 bindcode $mod+26 exec $files

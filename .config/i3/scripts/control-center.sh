@@ -43,7 +43,7 @@ case "$choice" in
     "Logout")             ~/.config/i3/scripts/i3exit.sh logout ;;
     "Reboot")             ~/.config/i3/scripts/i3exit.sh reboot ;;
     "Shutdown")           ~/.config/i3/scripts/i3exit.sh shutdown ;;
-    "Theme: toggle dark/light") ~/.config/rofi/scripts/toggle-theme.sh ;;
+    "Theme: toggle dark/light") ~/.config/i3/scripts/theme-toggle.sh ;;
     "Polybar: toggle")     polybar-msg cmd toggle ;;
     "Wallpaper: random")   ~/.config/i3/scripts/wallpaper.sh ;;
     "Wallpaper: select")   ~/.config/i3/scripts/wallpaper-selector.sh ;;

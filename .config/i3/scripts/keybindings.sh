@@ -4,7 +4,7 @@ THEME="$HOME/.config/rofi/themes/keybindings.rasi"
 
 keybinds=$(cat <<'EOF'
   Super + D                →   App launcher (Rofi with icons)
-  Super + Shift + D        →   Toggle Rofi dark / light theme
+  Super + Shift + D        →   Toggle global dark / light theme
   Super + Shift + `        →   Clipboard history (greenclip + rofi)
   Super + B                →   Open browser
   Super + Enter            →   Terminal (Kitty)

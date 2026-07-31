@@ -578,6 +578,69 @@ rofi -no-config -theme ~/.config/rofi/themes/nord-light.rasi -show drun -show-ic
 3. Проверить `Super + Shift + S` — экран не должен размываться, после выделения области скриншот скопирован в буфер; открой браузер/мессенджер и нажми `Ctrl + V`.
 4. Проверить `Super + Shift + H` — последние ошибки i3 скопируются в буфер обмена.
 
+## Глобальное переключение светлой/тёмной темы (2026-07-31)
+
+### Что сделано
+Реализовано полное переключение темы одной клавишей `Super + Shift + D` через `~/.config/i3/scripts/theme-toggle.sh`.
+
+Затронутые компоненты:
+1. **i3 рамки окон:**
+   - `~/.config/i3/themes/dark.conf`
+   - `~/.config/i3/themes/light.conf`
+   - `~/.config/i3/theme-current.conf` (активная тема)
+   - В `~/.config/i3/config` цвета заменены на `include ~/.config/i3/theme-current.conf`.
+
+2. **Polybar:**
+   - `~/.config/polybar/colors-dark.ini`
+   - `~/.config/polybar/colors-light.ini`
+   - `~/.config/polybar/colors-current.ini` (активная палитра)
+   - В `~/.config/polybar/config.ini` цвета подключаются через `include-file`.
+
+3. **Kitty:**
+   - `~/.config/kitty/theme-dark.conf` — Catppuccin Mocha.
+   - `~/.config/kitty/theme-light.conf` — Catppuccin Latte.
+   - `~/.config/kitty/theme-current.conf` (активная тема)
+   - В `~/.config/kitty/kitty.conf` подключается `theme-current.conf`.
+
+4. **Rofi:**
+   - Уже были `nord.rasi` и `nord-light.rasi`.
+   - Скрипт меняет `~/.config/rofi/config.rasi`.
+
+5. **GTK/Icons:**
+   - Через `gsettings` ставится `Adwaita`/`Adwaita-dark` и `Papirus`/`Papirus-Dark`.
+   - Устанавливается `color-scheme prefer-light` / `prefer-dark`.
+
+6. **Скрипт `theme-toggle.sh`:**
+   - Читает текущее состояние из `~/.config/i3/theme-state`.
+   - Копирует нужные файлы тем.
+   - Меняет GTK-настройки.
+   - Делает `i3-msg reload` и перезапускает polybar.
+   - Показывает `notify-send`.
+
+7. **`install.sh`:**
+   - Инициализирует `~/.config/i3/theme-state` значением `dark`.
+
+### Проверка
+- `bash -n ~/.config/i3/scripts/theme-toggle.sh` — OK.
+- `i3 -C -c ~/.config/i3/config` — OK.
+- `polybar -c ~/.config/polybar/config.ini main` — OK.
+- `kitty +runpy` — OK.
+- Ручное переключение `~/.config/i3/scripts/theme-toggle.sh` работает: меняется `theme-state` и `rofi/config.rasi`.
+
+### Что нужно сделать пользователю
+1. Перезагрузить i3: `Super + Shift + C`.
+2. Нажать `Super + Shift + D` — должно переключиться в светлую тему:
+   - рамки окон i3 станут светлыми,
+   - polybar перезапустится со светлой палитрой,
+   - Rofi при следующем открытии будет светлым,
+   - GTK-приложения переключатся (если тема Adwaita/Papirus установлена).
+3. Ещё раз `Super + Shift + D` вернёт тёмную тему.
+4. Для Kitty: новые окна откроются с активной темой; уже открытые окна нужно перезапустить.
+
+### Ограничения
+- Kvantum/Qt темы не переключаются автоматически, потому что имена Kvantum-тем могут отличаться. Если нужно — добавляется отдельная строка в `theme-toggle.sh`.
+- Для полного переключения GTK может понадобиться перезапуск приложений (Firefox, Telegram и т.д.).
+
 ## Буфер обмена + Kitty copy/paste на RU/EN (2026-07-31)
 
 ### Что сделано
