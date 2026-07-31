@@ -1,5 +1,5 @@
-/**
- * Nordic rofi theme — light/day variant
+/*
+ * Nordic rofi theme - light/day variant
  * Based on https://www.nordtheme.com/
  */
 
@@ -25,8 +25,10 @@
 	nord15: #b48ead;
 
     foreground:  @nord10;
-    highlight:     underline bold @nord10;
+    backlight:   #ccffeedd;
     background-color:  transparent;
+
+    highlight:     underline bold #5e81ac;
 
     transparent: rgba(236,239,244,0);
 }
@@ -51,7 +53,7 @@ mainbox {
 }
 
 message {
-    color: @nord6;
+    color: @nord0;
     padding: 5;
     border-color: @foreground;
     border:  0px 2px 2px 2px;

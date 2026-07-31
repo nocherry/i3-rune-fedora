@@ -496,3 +496,32 @@ git push -u origin main
 3. Нажать `Super + Shift + D` — появится уведомление "Light theme enabled", и следующий вызов `Super + D` будет в светлой теме.
 4. Ещё раз `Super + Shift + D` вернёт тёмную тему.
 
+## Багфикс: светлая тема Rofi не применялась (2026-07-31)
+
+### Проблема
+Пользователь нажимал `Super + Shift + D`, но разницы между тёмной и светлой темой Rofi не было.
+
+### Причина
+Rofi 2.0 не мог распарсить `nord-light.rasi` из-за строки:
+```
+highlight: underline bold @nord10;
+```
+В свойстве `highlight` нельзя использовать переменные темы (`@nord10`), только литеральный цвет. Из-за этого Rofi игнорировал `nord-light.rasi` и падал обратно на дефолтную/тёмную тему.
+
+### Исправление
+- В `nord-light.rasi` заменено `highlight: underline bold @nord10;` на `highlight: underline bold #5e81ac;`.
+- Убраны не-ASCII символы (em-dash) из комментариев на всякий случай.
+- Пересоздан файл на основе рабочего `nord.rasi` с минимальными изменениями цветов.
+
+### Проверка
+```bash
+rofi -no-config -theme ~/.config/rofi/themes/nord-light.rasi -show drun -show-icons -icon-theme Papirus
+# OK, без ошибок парсинга
+```
+
+### Что нужно сделать пользователю
+1. Перезагрузить i3: `Super + Shift + C`.
+2. Нажать `Super + Shift + D` — уведомление "Light theme enabled".
+3. Нажать `Super + D` — Rofi должен стать светлым (белый/серый фон, тёмный текст).
+4. Повторное `Super + Shift + D` вернёт тёмную тему.
+
