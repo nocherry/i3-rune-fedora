@@ -641,6 +641,38 @@ rofi -no-config -theme ~/.config/rofi/themes/nord-light.rasi -show drun -show-ic
 - Kvantum/Qt темы не переключаются автоматически, потому что имена Kvantum-тем могут отличаться. Если нужно — добавляется отдельная строка в `theme-toggle.sh`.
 - Для полного переключения GTK может понадобиться перезапуск приложений (Firefox, Telegram и т.д.).
 
+## Фоновые лаунчеры (2026-07-31)
+
+### Проблема
+Пользователь хотел запускать процессы "сверху экрана" (из панели/меню), чтобы не видеть GTK-ошибок в терминале, как при запуске `./tg-ws-proxy`.
+
+### Решение
+- Создан универсальный обёртка `~/.config/i3/scripts/run-bg.sh`:
+  - принимает имя и команду,
+  - запускает в фоне через `nohup`,
+  - stdout/stderr пишет в `~/.local/share/i3/launchers/<name>.log`,
+  - показывает `notify-send`.
+- Создан пример `~/.config/i3/launchers/tg-ws-proxy.sh`.
+- В Control Center добавлен пункт `Launch: tg-ws-proxy`.
+
+### Как добавить свои лаунчеры
+1. Создать файл `~/.config/i3/launchers/имя.sh`:
+   ```bash
+   #!/usr/bin/env bash
+   ~/.config/i3/scripts/run-bg.sh имя /полный/путь/к/программе [аргументы]
+   ```
+2. `chmod +x ~/.config/i3/launchers/имя.sh`.
+3. Добавить строку в `~/.config/i3/scripts/control-center.sh` в меню и `case`.
+
+### Проверка
+- `bash -n ~/.config/i3/scripts/run-bg.sh` — OK.
+- `bash -n ~/.config/i3/scripts/control-center.sh` — OK.
+
+### Что нужно сделать пользователю
+1. Проверить/исправить путь в `~/.config/i3/launchers/tg-ws-proxy.sh`, если `tg-ws-proxy` лежит не в `$HOME/Documents/youtube/usr/bin/`.
+2. Запустить через Control Center (`Super + \`` → `Launch: tg-ws-proxy`).
+3. Проверить лог: `cat ~/.local/share/i3/launchers/tg-ws-proxy.log`.
+
 ## Буфер обмена + Kitty copy/paste на RU/EN (2026-07-31)
 
 ### Что сделано

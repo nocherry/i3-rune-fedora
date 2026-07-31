@@ -13,6 +13,7 @@ Brightness: -5%
 Screenshot: area
 Screenshot: full
 Screenshot: to clipboard (area)
+Launch: tg-ws-proxy
 Lock
 Logout
 Reboot
@@ -39,6 +40,7 @@ case "$choice" in
     "Screenshot: area")    ~/.config/i3/scripts/screenshot.sh area ;;
     "Screenshot: full")   ~/.config/i3/scripts/screenshot.sh full ;;
     "Screenshot: to clipboard (area)") ~/.config/i3/scripts/screenshot.sh area ;;
+    "Launch: tg-ws-proxy") ~/.config/i3/launchers/tg-ws-proxy.sh ;;
     "Lock")               ~/.config/i3/scripts/i3exit.sh lock ;;
     "Logout")             ~/.config/i3/scripts/i3exit.sh logout ;;
     "Reboot")             ~/.config/i3/scripts/i3exit.sh reboot ;;

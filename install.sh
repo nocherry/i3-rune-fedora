@@ -138,6 +138,7 @@ cp -r "$REPO_DIR/.config/"* "$HOME/.config/"
 
 # Set execute permissions
 chmod +x "$HOME/.config/i3/scripts/"*.sh
+chmod +x "$HOME/.config/i3/launchers/"*.sh 2>/dev/null || true
 chmod +x "$HOME/.config/polybar/launch.sh"
 chmod +x "$HOME/.config/polybar/brightness.sh"
 chmod +x "$HOME/.xinitrc" 2>/dev/null || true
