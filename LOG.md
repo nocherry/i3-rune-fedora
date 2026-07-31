@@ -818,3 +818,83 @@ rofi -no-config -theme ~/.config/rofi/themes/nord-light.rasi -show drun -show-ic
 6. `Super + `` — открыть Control Center с клавиатуры.
 7. Проверить, что после `Super + Shift + S` скриншот копируется в буфер и экран не размывается.
 
+## Багфикс: панель пропадала, WiFi без меню, обои без превью, copy/paste, запуск без warnings (2026-07-31)
+
+### 1. Панель больше не пропадает
+- `~/.config/polybar/launch.sh` переписан:
+  - PID-файл `/tmp/polybar-launch.pid` — убивает старый цикл запуска при reload.
+  - Если polybar падает — автоматически перезапускается.
+- Панель теперь **на всю ширину** (`width = 100%`, `offset-x = 0`, `radius = 0), чтобы не оставлять щелей по бокам.
+
+### 2. WiFi — полноценное меню
+- Создан `~/.config/i3/scripts/wifi-menu.sh`.
+- Сканирует сети `nmcli`, показывает список в rofi: `SSID [сигнал%] [защита]`.
+- Подключается к выбранной сети (известной или новой).
+- В Control Center пункт переименован в `WiFi: networks`.
+
+### 3. Обои с превью
+- `Super + W` теперь открывает `nitrogen` — браузер обоев с миниатюрами.
+- Fallback на rofi-список, если nitrogen не установлен.
+- `install.sh` теперь ставит `nitrogen`.
+
+### 4. Kitty copy/paste на русской раскладке
+- В `~/.config/kitty/kitty.conf` добавлены бинды на кириллические `с/С` и `м/М`.
+- Добавлены универсальные `Ctrl+Insert` / `Shift+Insert`, которые не зависят от раскладки.
+
+### 5. Запуск GUI-приложений без warnings в терминале
+- `~/.config/i3/scripts/run-bg.sh` теперь:
+  - запускает в фоне,
+  - пишет лог в `~/.local/share/i3/launchers/`,
+  - устанавливает `GTK_MODULES=""`, чтобы подавить warning про `colorreload-gtk-module`.
+- В `~/.bashrc` добавлена функция `runbg`, чтобы из терминала тоже можно было запускать cleanly:
+  ```bash
+  runbg имя /путь/к/приложению
+  ```
+
+### 6. Глобальная тема теперь влияет на GTK/Qt приложения
+- `theme-toggle.sh` теперь меняет:
+  - i3 рамки,
+  - polybar,
+  - rofi,
+  - kitty,
+  - **GTK**: `gsettings` + `~/.config/xsettingsd/xsettingsd.conf`, перезапуск `xsettingsd`,
+  - **Kvantum/Qt**: `~/.config/Kvantum/kvantum.kvconfig` переключает `catppuccin-mocha-blue` ↔ `catppuccin-latte-blue`.
+- По умолчанию GTK-тема теперь `Adwaita-dark` + `Papirus-Dark` вместо `Rose-Pine`, чтобы не было warning'ов парсинга gtk-dark.css.
+- `theme-toggle.sh` запускает polybar и xsettingsd в фоне, не блокируется.
+
+### Обновлённые файлы
+- `~/.config/polybar/config.ini`
+- `~/.config/polybar/launch.sh`
+- `~/.config/i3/scripts/wifi-menu.sh` (новый)
+- `~/.config/i3/scripts/control-center.sh`
+- `~/.config/i3/scripts/wallpaper-selector.sh`
+- `~/.config/i3/scripts/theme-toggle.sh`
+- `~/.config/i3/scripts/run-bg.sh`
+- `~/.config/kitty/kitty.conf`
+- `~/.config/xsettingsd/xsettingsd.conf`
+- `~/.config/Kvantum/kvantum.kvconfig`
+- `~/.bashrc`
+- `install.sh`
+- Синхронизировано в репозиторий.
+
+### Проверка
+- `i3 -C` — OK.
+- `bash -n` на всех скриптах — OK.
+- `kitty +runpy` — OK.
+- `bash -n install.sh` — OK.
+
+### Что нужно сделать пользователю
+1. Перезагрузить i3: `Super + Shift + C`.
+2. Панель должна быть на всю ширину и не пропадать.
+3. `Super + W` → открывается `nitrogen` с миниатюрами обоев. Если nitrogen не установлен — поставить:
+   ```bash
+   sudo dnf install nitrogen
+   ```
+4. `Super + \`` → Control Center → `WiFi: networks` → выбрать сеть.
+5. В Kitty: `Ctrl+Insert` копирует, `Shift+Insert` вставляет (независимо от раскладки). Попробовать и `Ctrl+Shift+C/V` на русском.
+6. `Super + Shift + D` переключает тему; GTK/Qt приложения должны подхватывать (новые окна).
+7. Для запуска `tg-ws-proxy` без warnings:
+   - через Control Center → `Launch: tg-ws-proxy`, или
+   - из терминала: `runbg tg-ws-proxy "$HOME/Documents/youtube/usr/bin/tg-ws-proxy"`.
+
+

@@ -54,7 +54,7 @@ echo "  Backup saved to: $BACKUP_DIR"
 # fontawesome-fonts-web) are not present in newer Fedora repos but are non-critical.
 header "Installing packages"
 sudo dnf install -y --skip-unavailable \
-    i3 polybar rofi picom dunst kitty Thunar feh \
+    i3 polybar rofi picom dunst kitty Thunar feh nitrogen \
     network-manager-applet blueman pavucontrol brightnessctl maim playerctl \
     xorg-x11-server-Xorg xorg-x11-xinit xrandr xset xsetroot \
     gnome-keyring gnome-settings-daemon lxqt-policykit \
@@ -236,7 +236,7 @@ else
 fi
 
 missing_pkgs=()
-for pkg in i3 polybar rofi picom dunst kitty thunar feh nm-applet blueman-applet pavucontrol brightnessctl maim playerctl i3lock xclip greenclip; do
+for pkg in i3 polybar rofi picom dunst kitty thunar feh nitrogen nm-applet blueman-applet pavucontrol brightnessctl maim playerctl i3lock xclip greenclip; do
     command -v "$pkg" &>/dev/null || missing_pkgs+=("$pkg")
 done
 

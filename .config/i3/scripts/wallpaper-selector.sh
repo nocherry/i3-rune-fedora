@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
-# ponytail: rofi-based wallpaper picker with Random and fallback options
+# ponytail: wallpaper picker with image preview (nitrogen) + text fallback
 WALLPAPER_DIR="$HOME/Pictures/wallpapers"
 FALLBACK="$HOME/.config/i3/wallpaper.png"
 
 mkdir -p "$WALLPAPER_DIR"
 
-# Build list: random, fallback option, then sorted filenames
+if command -v nitrogen >/dev/null 2>&1; then
+    nitrogen "$WALLPAPER_DIR" &
+    exit 0
+fi
+
+# Fallback: rofi text list with Random and Set as fallback options
 mapfile -t files < <(find "$WALLPAPER_DIR" -maxdepth 1 -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.gif' \) -printf '%f\n' 2>/dev/null | sort)
 
 list="Random\nSet as fallback"

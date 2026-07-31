@@ -28,6 +28,7 @@ EOF
 [ -z "$choice" ] && exit 0
 
 case "$choice" in
+    "WiFi: networks")      ~/.config/i3/scripts/wifi-menu.sh ;;
     "WiFi: toggle")        nmcli radio wifi toggle ;;
     "WiFi: settings")      nm-connection-editor ;;
     "Bluetooth: toggle")   bluetoothctl power toggle ;;

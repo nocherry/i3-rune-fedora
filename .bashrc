@@ -626,6 +626,14 @@ export EDITOR=nvim # neovim
 
 export QT_QPA_PLATFORMTHEME=qt5ct
 
+# Run GUI apps from terminal without spamming it with GTK warnings
+runbg() {
+    local name="${1:-app}"
+    shift
+    mkdir -p "$HOME/.local/share/i3/launchers"
+    GTK_MODULES="" nohup "$@" >"$HOME/.local/share/i3/launchers/${name}.log" 2>&1 &
+}
+
 # Show system info on shell start (only if nitch is installed)
 command -v nitch >/dev/null 2>&1 && nitch
 
