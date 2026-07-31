@@ -70,7 +70,7 @@ exec --no-startup-id dunst &
 # Wallpaper dir + fallback wallpaper (handles spaces in filenames)
 exec --no-startup-id mkdir -p ~/Pictures/Screenshots
 exec --no-startup-id mkdir -p ~/Pictures/wallpapers
-exec --no-startup-id sh -c 'wp=$(find ~/Pictures/wallpapers -type f 2>/dev/null | shuf -n 1); [ -n "$wp" ] && feh --bg-fill --no-fehbg "$wp" || feh --bg-fill --no-fehbg ~/.config/i3/wallpaper.png'
+exec --no-startup-id sh -c 'wp=$(find "$HOME/Pictures/wallpapers" -type f 2>/dev/null | shuf -n 1); [ -n "$wp" ] && feh --bg-fill --no-fehbg "$wp" || feh --bg-fill --no-fehbg "$HOME/.config/i3/wallpaper.png"'
 
 # Compositor & bar
 exec_always --no-startup-id ~/.config/polybar/launch.sh
@@ -197,7 +197,7 @@ bindcode $mod+Shift+72 exec --no-startup-id maim -s ~/Pictures/Screenshots/scree
 bindcode $mod+Ctrl+72 exec --no-startup-id sh -c "sleep 5; maim ~/Pictures/Screenshots/screenshot-$(date +%Y%m%d-%H%M%S).png"
 
 ### Wallpapers (handles spaces in filenames)
-bindcode $mod+25 exec --no-startup-id sh -c 'feh --randomize --bg-fill --no-fehbg "$(find ~/Pictures/wallpapers -type f | shuf -n 1)"'
+bindcode $mod+25 exec --no-startup-id sh -c 'feh --randomize --bg-fill --no-fehbg "$(find "$HOME/Pictures/wallpapers" -type f | shuf -n 1)"'
 
 ### Bar
 bindcode $mod+Ctrl+Mod1+56 exec --no-startup-id polybar-msg cmd toggle

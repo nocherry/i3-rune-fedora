@@ -326,6 +326,26 @@ exec --no-startup-id sh -c "command -v pasytray >/dev/null && pasytray &"
 3. Обои должны появиться сразу после reload (или после нового входа).
 4. Если обои не появились — нажать `Super + W`.
 
+## Ошибка 4: обои всё ещё не ставятся автоматически
+
+**Причина:** внутри `sh -c '...'` использовался `~` вместо `$HOME`. В одинарных кавычках `~` не разворачивается в домашнюю директорию, поэтому `find ~/Pictures/wallpapers` искал буквальный путь `~/Pictures/wallpapers`, который не существует. Команда молча возвращала пустой результат, и `feh` не получал файл.
+
+**Исправление:** заменить `~/Pictures/wallpapers` и `~/.config/i3/wallpaper.png` на `$HOME/...` внутри `sh -c`:
+```
+sh -c 'wp=$(find "$HOME/Pictures/wallpapers" -type f 2>/dev/null | shuf -n 1); [ -n "$wp" ] && feh --bg-fill --no-fehbg "$wp" || feh --bg-fill --no-fehbg "$HOME/.config/i3/wallpaper.png"'
+```
+
+То же самое для `Super + W`.
+
+**Где исправлено:**
+- `~/.config/i3/config`
+- `/home/fedora/Documents/Code/X11/i3-fedora-ready/.config/i3/config`
+
+**Проверка:**
+```bash
+sh -c 'wp=$(find "$HOME/Pictures/wallpapers" -type f 2>/dev/null | shuf -n 1); [ -n "$wp" ] && feh --bg-fill --no-fehbg "$wp" || feh --bg-fill --no-fehbg "$HOME/.config/i3/wallpaper.png"'
+```
+
 ## Проверка SDDM (подтверждено пользователем)
 
 - Команда `printf "[General]\nDisplayServer=x11\n" | sudo tee /etc/sddm.conf.d/x11.conf` была применена вручную.
