@@ -1,18 +1,23 @@
 #!/usr/bin/env bash
 
 STEP=5
+DEVICE=${POLYBAR_BACKLIGHT:-}
+args=()
+[[ -n "$DEVICE" ]] && args=(-d "$DEVICE")
 
 get_brightness() {
-    brightnessctl -m | cut -d, -f4
+    local value
+    value=$(brightnessctl "${args[@]}" -m 2>/dev/null | cut -d, -f4 | sed -n '1p')
+    printf '%s\n' "${value:-n/a}"
 }
 
 case "$1" in
     up)
-        brightnessctl set +${STEP}% >/dev/null
+        brightnessctl "${args[@]}" set +${STEP}% >/dev/null
         ;;
     down)
-        brightnessctl set ${STEP}%- >/dev/null
+        brightnessctl "${args[@]}" set ${STEP}%- >/dev/null
         ;;
 esac
 
-echo "$(get_brightness)"
+get_brightness

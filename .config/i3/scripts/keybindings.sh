@@ -5,6 +5,7 @@ THEME="$HOME/.config/rofi/themes/keybindings.rasi"
 keybinds=$(cat <<'EOF'
   Super + D                →   App launcher (Rofi with icons)
   Super + Shift + D        →   Toggle global dark / light theme
+  Super + Shift + N        →   Toggle warm / neutral screen color
   Super + Shift + `        →   Clipboard history (greenclip + rofi)
   Super + B                →   Open browser
   Super + Enter            →   Terminal (Kitty)
@@ -15,16 +16,19 @@ keybinds=$(cat <<'EOF'
   Super + `                →   Control center (quick settings)
   Super + ?                →   Welcome menu
   Super + Q                →   Close active window
-  Super + Shift + Q        →   Kill active process
+  Super + Shift + Q        →   Close active window (alternative)
   Ctrl + Alt + Delete      →   Logout
   Ctrl + Alt + L           →   Lock screen
-  Ctrl + Alt + P           →   Power menu
+  Ctrl + Alt + P           →   Меню питания
+  Ctrl + Alt + S           →   Lock and suspend immediately
+  Ctrl + Space             →   Handy record/stop (only while Handy runs)
   Super + F                →   Fullscreen
   Super + Shift + F        →   Fullscreen global
   Super + Space            →   Toggle floating
   Super + Shift + Space    →   Float all-ish (enable floating)
   Super + Left/Right/Up/Down       →   Focus
   Super + Shift + Left/Right/Up/Down →   Move window
+  Super + L / Д            →   Visible workspace layout menu
   Super + 1 … 9 / 0        →   Switch to workspace 1–10
   Super + Shift + 1 … 9/0  →   Move window to workspace 1–10
   Super + Tab              →   Next workspace
@@ -49,12 +53,15 @@ keybinds=$(cat <<'EOF'
   XF86 Mic Mute            →   Toggle mic mute
   XF86 Brightness Up/Down  →   Brightness ±5%
   XF86 Audio Play/Next/Prev →   Media controls
-  Alt + Tab                →   Cycle windows (rofi)
+  Alt + Tab                →   Все окна; переход на их рабочий стол
   ---
   Top bar (polybar)        →   Launcher, workspaces, date, system tray, battery, brightness, volume, network, CPU, RAM, power
   Click launcher icon      →   Control center
+  Left click WiFi name     →   WiFi networks menu
+  Right click WiFi name    →   Advanced network settings
   Click power icon         →   Power menu
   Scroll on brightness/volume → Adjust
+  Click brightness lamp    →   Screen color / eye-care menu
 EOF
 )
 

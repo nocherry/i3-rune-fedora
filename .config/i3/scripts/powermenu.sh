@@ -1,16 +1,16 @@
 #!/bin/bash
 
-lock="󰌾 Lock"
-logout="󰍃 Logout"
-suspend="󰒲 Suspend"
-reboot="󰑓 Reboot"
-shutdown="󰐥 Shutdown"
+lock="󰌾 Заблокировать экран"
+logout="󰍃 Выйти из сеанса"
+suspend="󰒲 Перейти в сон"
+reboot="󰑓 Перезагрузить"
+shutdown="󰐥 Выключить"
 
 options="$lock\n$logout\n$suspend\n$reboot\n$shutdown"
 
-theme="~/.config/rofi/themes/powermenu.rasi"
+theme="$HOME/.config/rofi/themes/powermenu.rasi"
 
-chosen=$(echo -e "$options" | rofi -dmenu -i -p "Power Menu" -theme "$theme")
+chosen=$(printf '%b\n' "$options" | rofi -dmenu -i -no-custom -kb-cancel "Escape,Super+q" -p "Питание" -theme "$theme")
 
 case "$chosen" in
     "$lock") ~/.config/i3/scripts/i3exit.sh lock ;;

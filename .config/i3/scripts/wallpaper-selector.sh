@@ -2,6 +2,7 @@
 # ponytail: wallpaper picker with image preview (nitrogen) + text fallback
 WALLPAPER_DIR="$HOME/Pictures/wallpapers"
 FALLBACK="$HOME/.config/i3/wallpaper.png"
+CURRENT="$HOME/.config/i3/wallpaper-current"
 
 mkdir -p "$WALLPAPER_DIR"
 
@@ -21,12 +22,14 @@ choice=$(echo -e "$list" | rofi -dmenu -i -p "Wallpaper")
 
 case "$choice" in
     Random)
+        rm -f "$CURRENT" "$HOME/.config/nitrogen/bg-saved.cfg"
         ~/.config/i3/scripts/wallpaper.sh
         ;;
     "Set as fallback")
         wp=$(find "$WALLPAPER_DIR" -maxdepth 1 -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.gif' \) | shuf -n 1)
         if [ -n "$wp" ]; then
             cp "$wp" "$FALLBACK"
+            printf '%s\n' "$FALLBACK" > "$CURRENT"
             feh --bg-fill --no-fehbg "$FALLBACK"
             notify-send "Wallpaper" "Fallback updated"
         else
@@ -34,6 +37,7 @@ case "$choice" in
         fi
         ;;
     *)
+        printf '%s\n' "$WALLPAPER_DIR/$choice" > "$CURRENT"
         feh --bg-fill --no-fehbg "$WALLPAPER_DIR/$choice"
         ;;
 esac

@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 DISABLE_FILE="$HOME/.config/i3/scripts/.welcome_disabled"
-ISSUE_URL="https://github.com/harilvfs/i3wmdotfiles/issues/new/choose"
 KEYBINDS_SCRIPT="$HOME/.config/i3/scripts/keybindings.sh"
 USER_NAME=$(whoami)
 
@@ -22,7 +21,6 @@ yad --title="i3wm Quick Start" \
     --text="$TITLE\n$LINE\n\n$HELP_TEXT\n\n$INFO\n\n$CONFIG_PATH" \
     --text-align=center \
     --button="  Keybindings:2" \
-    --button="  Report Issue:3" \
     --button="󰈆  Don't show again:1" \
     --button="Close:0"
 
@@ -30,11 +28,10 @@ EXIT_CODE=$?
 
 case $EXIT_CODE in
     2) bash "$KEYBINDS_SCRIPT" & ;;
-    3) xdg-open "$ISSUE_URL" & ;;
     1)
         mkdir -p "$(dirname "$DISABLE_FILE")"
         touch "$DISABLE_FILE"
-        notify-send -u low "i3wm" "Startup popup disabled. Reopen with Super+H"
+        notify-send -u low "i3wm" "Startup popup disabled. Reopen with Super+Shift+?"
         ;;
     *) exit 0 ;;
 esac

@@ -45,20 +45,24 @@ exec --no-startup-id setxkbmap -layout us,ru -option grp:alt_shift_toggle
 # PolicyKit agent (use whichever is installed)
 exec --no-startup-id sh -c "command -v /usr/libexec/lxqt-policykit-agent >/dev/null && /usr/libexec/lxqt-policykit-agent || command -v /usr/libexec/polkit-gnome-authentication-agent-1 >/dev/null && /usr/libexec/polkit-gnome-authentication-agent-1 || true"
 
-# Keyring daemon
-exec --no-startup-id gnome-keyring-daemon --start --components=secrets
+# Pass the SDDM login password from pam-kwallet to KWallet without storing it.
+exec --no-startup-id sh -c "[ -x /usr/libexec/pam_kwallet_init ] && exec /usr/libexec/pam_kwallet_init || true"
 
 # xsettingsd
 exec --no-startup-id xsettingsd
 
-# Lock on suspend (only if xss-lock is installed)
-exec --no-startup-id sh -c "command -v xss-lock >/dev/null && xss-lock --transfer-sleep-lock -- i3lock -c 2e3440 || true"
+# Follow the physical headphone jack for microphone routing; enable touchpad tapping.
+exec --no-startup-id ~/.config/i3/scripts/audio-port-autoswitch.sh
+exec --no-startup-id ~/.config/i3/scripts/touchpad.py
+
+# Auto-lock after 10 minutes and lock before systemd suspends.
+exec --no-startup-id xset s 600 10
+exec --no-startup-id sh -c "command -v xss-lock >/dev/null && exec xss-lock --transfer-sleep-lock -- $HOME/.config/i3/scripts/lock-screen.sh || true"
 
 # Capture i3 log for error viewer
 exec --no-startup-id sh -c "mkdir -p ~/.local/share/i3 && i3-dump-log > ~/.local/share/i3/log 2>&1 &"
 
-# System tray applets
-exec --no-startup-id nm-applet
+# System tray applets (network is controlled by the clickable Polybar module)
 exec --no-startup-id blueman-applet
 exec --no-startup-id sh -c "command -v pasytray >/dev/null && pasytray &"
 
@@ -78,6 +82,9 @@ exec --no-startup-id mkdir -p ~/Pictures/wallpapers
 # Wallpaper (random from ~/Pictures/wallpapers, fallback to bundled wallpaper)
 exec --no-startup-id ~/.config/i3/scripts/wallpaper.sh
 
+# Restore the saved eye-care color temperature
+exec --no-startup-id ~/.config/i3/scripts/eye-care.sh restore
+
 # Compositor & bar
 exec_always --no-startup-id ~/.config/polybar/launch.sh
 exec_always --no-startup-id picom --config ~/.config/picom/picom.conf
@@ -94,6 +101,8 @@ bindcode $mod+40 exec --no-startup-id ~/.config/i3/scripts/rofi.sh
 bindcode $mod+Shift+49 exec --no-startup-id sh -c "rofi -modi 'clipboard:$HOME/.local/bin/greenclip print' -show clipboard -run-command '{cmd}'"
 # Toggle global dark/light theme
 bindcode $mod+Shift+40 exec --no-startup-id ~/.config/i3/scripts/theme-toggle.sh
+# Toggle warm/neutral screen color
+bindcode $mod+Shift+57 exec --no-startup-id ~/.config/i3/scripts/eye-care.sh toggle
 bindcode $mod+56 exec xdg-open "https://www.google.com"
 bindcode $mod+36 exec $term
 bindcode $mod+26 exec $files
@@ -112,6 +121,7 @@ bindsym Ctrl+Mod1+Delete exec ~/.config/i3/scripts/i3exit.sh logout
 bindcode $mod+24 kill
 bindcode Ctrl+Mod1+46 exec ~/.config/i3/scripts/i3exit.sh lock
 bindcode Ctrl+Mod1+33 exec ~/.config/i3/scripts/powermenu.sh
+bindcode Ctrl+Mod1+39 exec ~/.config/i3/scripts/i3exit.sh suspend
 
 ### Window state
 bindcode $mod+41 fullscreen toggle
@@ -135,6 +145,9 @@ bindsym $mod+Shift+Right move right
 bindcode $mod+55 split v
 bindcode $mod+Shift+55 split h
 bindcode $mod+38 focus parent
+
+# Visible per-workspace menu; keycode 46 is L on EN and Д on RU.
+bindcode $mod+46 exec --no-startup-id ~/.config/i3/scripts/layout-menu.sh
 
 ### Scratchpad (Hyprland special workspace equivalent)
 bindcode $mod+30 scratchpad show
@@ -216,6 +229,10 @@ bindcode $mod+Ctrl+72 exec --no-startup-id ~/.config/i3/scripts/screenshot.sh de
 
 ### Wallpapers (handles spaces in filenames)
 bindcode $mod+25 exec --no-startup-id ~/.config/i3/scripts/wallpaper-selector.sh
+
+### Window switcher
+# Lists windows from every workspace; selecting one asks i3 to focus it there.
+bindsym Mod1+Tab exec --no-startup-id rofi -show window -show-icons -window-thumbnail -window-format "{w}  {c}  {t}" -display-window "Все окна" -theme ~/.config/rofi/launcher.rasi
 
 ### Bar
 bindcode $mod+Ctrl+Mod1+56 exec --no-startup-id polybar-msg cmd toggle

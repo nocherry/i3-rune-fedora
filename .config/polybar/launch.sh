@@ -1,21 +1,59 @@
 #!/usr/bin/env bash
-# ponytail: launch polybar with auto-restart on crash and single-instance guard
+# ponytail: one owned polybar launcher, restarted after crashes
 
-# Kill previous launcher loops (excluding ourselves — pkill -f would match self)
-for pid in $(pgrep -f 'config/polybar/launch.sh' 2>/dev/null); do
-    [ "$pid" != "$$" ] && kill "$pid" 2>/dev/null
-done
-polybar-msg cmd quit 2>/dev/null || true
-killall -q polybar 2>/dev/null || true
-sleep 0.3
+runtime_dir=${XDG_RUNTIME_DIR:-/tmp/i3-fedora-$UID}
+state_dir=${XDG_STATE_HOME:-$HOME/.local/state}/i3-fedora
+mkdir -p -m 700 "$runtime_dir" "$state_dir"
+pidfile="$runtime_dir/polybar-launcher.pid"
+log="$state_dir/polybar.log"
 
-# Auto-detect battery and adapter names for this machine
-export POLYBAR_BATTERY=${POLYBAR_BATTERY:-$(ls /sys/class/power_supply/ 2>/dev/null | grep -E '^BAT' | head -n1)}
-export POLYBAR_ADAPTER=${POLYBAR_ADAPTER:-$(ls /sys/class/power_supply/ 2>/dev/null | grep -E '^ADP|^AC' | head -n1)}
+if read -r old_pid < "$pidfile" 2>/dev/null && kill -0 "$old_pid" 2>/dev/null; then
+    old_cmd=$(tr '\0' ' ' < "/proc/$old_pid/cmdline" 2>/dev/null)
+    [[ "$old_cmd" == *".config/polybar/launch.sh"* ]] && kill "$old_pid" 2>/dev/null
+fi
+printf '%s\n' "$$" > "$pidfile"
 
-# Launch loop: if polybar crashes, restart it automatically
-echo "---" | tee -a /tmp/polybar.log
+child=""
+cleanup() {
+    [[ -n "$child" ]] && kill "$child" 2>/dev/null
+    if read -r current_pid < "$pidfile" 2>/dev/null && [[ "$current_pid" == "$$" ]]; then
+        rm -f "$pidfile"
+    fi
+}
+trap cleanup EXIT INT TERM
+chmod 700 "$runtime_dir" "$state_dir"
+
+if [[ -z "${POLYBAR_BATTERY:-}" ]]; then
+    for path in /sys/class/power_supply/BAT*; do
+        [[ -e "$path" ]] && export POLYBAR_BATTERY=${path##*/} && break
+    done
+fi
+if [[ -z "${POLYBAR_ADAPTER:-}" ]]; then
+    for path in /sys/class/power_supply/AC* /sys/class/power_supply/ADP*; do
+        [[ -e "$path" ]] && export POLYBAR_ADAPTER=${path##*/} && break
+    done
+fi
+if [[ -z "${POLYBAR_NETWORK:-}" ]]; then
+    wifi_device=""
+    while IFS=: read -r device type state; do
+        if [[ "$type" == "wifi" ]]; then
+            [[ -z "$wifi_device" ]] && wifi_device=$device
+            [[ "$state" == "connected" ]] && wifi_device=$device && break
+        fi
+    done < <(LC_ALL=C nmcli -t -f DEVICE,TYPE,STATE device status 2>/dev/null)
+    [[ -n "$wifi_device" ]] && export POLYBAR_NETWORK=$wifi_device
+fi
+if [[ -z "${POLYBAR_BACKLIGHT:-}" ]]; then
+    for path in /sys/class/backlight/*; do
+        [[ -e "$path" ]] && export POLYBAR_BACKLIGHT=${path##*/} && break
+    done
+fi
+
+printf '%s\n' "--- $(date --iso-8601=seconds)" > "$log"
 while true; do
-    polybar main 2>&1 | tee -a /tmp/polybar.log
+    polybar main >> "$log" 2>&1 &
+    child=$!
+    wait "$child"
+    child=""
     sleep 1
 done

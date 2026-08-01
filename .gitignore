@@ -1,14 +1,29 @@
-# Local backups
+# Pinned binaries downloaded by install.sh — keep them out of the repo.
+# The installer fetches and SHA-256-verifies the right versions itself.
+.local/bin/greenclip
+.local/bin/libinput-gestures
+
+# Python bytecode caches produced during self-tests
+__pycache__/
+*.pyc
+*.pyo
+
+# Runtime-only state (the wallpaper pointer, i3 dump-log capture, etc.)
+.config/i3/wallpaper-current
+.config/i3/lock-screen.png
+.config/i3/scripts/__pycache__/
+.config/wireplumber/main.lua.d/
+
+# Original config snapshots from the first installer run
 .config.orig/
-*.orig
-*~
 
-# Logs
-*.log
+# Local backup folders produced by install.sh
+i3-fedora-backup-*/
 
-# OS files
+# OS / editor noise
 .DS_Store
 Thumbs.db
-
-# Auto-generated fish state
-.config/fish/fish_variables
+.idea/
+.vscode/
+*.swp
+*~
