@@ -27,6 +27,7 @@
 
 - [🎯 Why this project exists](#-why-this-project-exists)
 - [✨ Features](#-features)
+- [📸 Screenshots](#-screenshots)
 - [⚡ Quick start](#-quick-start)
 - [🧰 What gets installed](#-what-gets-installed)
 - [🖱️ Keybindings](#️-keybindings)
@@ -82,6 +83,77 @@ This repo packages every fix and decision into a single `install.sh` that is **i
 | 🛡️ **Polkit** | Auto-detects `lxqt-policykit-agent` (preinstalled) with `polkit-gnome` fallback |
 | 🎨 **Themes** | Nord for everything GTK3/Qt5/Qt6/Kvantum/Sweet/Adwaita, Papirus icon theme |
 | 🖼️ **Wallpapers** | Clones [harilvfs/wallpapers](https://github.com/harilvfs/wallpapers) and picks a random one on each session, with bundled fallback |
+
+---
+
+<a id="-screenshots"></a>
+
+## 📸 Screenshots
+
+All screenshots are taken on the live desktop with a real Fedora 43 install — no mock-ups.
+
+<details>
+<summary><b>🖥️ Desktop — clean workspace</b></summary>
+
+> Polybar with all modules (workspaces, tray, brightness, eye-care 3500K, volume, Wi-Fi, CPU 4%, battery 37%), Nord theme, Japanese landscape wallpaper from <code>harilvfs/wallpapers</code>.
+
+![Desktop](docs/screenshots/01-desktop.png)
+
+</details>
+
+<details>
+<summary><b>🚀 App launcher (Rofi) — <code>Super + D</code></b></summary>
+
+> Nord-themed Rofi with Papirus icons, fuzzy search. The screenshot shows a search for "chrom" matching Google Chrome and Chromium.
+
+![Launcher](docs/screenshots/02-launcher.png)
+
+</details>
+
+<details>
+<summary><b>🔐 Power menu (Rofi) — <code>Ctrl + Alt + P</code></b></summary>
+
+> Five explicit Russian actions: Заблокировать экран, Выйти из сеанса, Перейти в сон, Перезагрузить, Выключить. <code>Esc</code>/<code>Super+Q</code> cancel.
+
+![Power menu](docs/screenshots/03-power-menu.png)
+
+</details>
+
+<details>
+<summary><b>⚙️ Control center (Rofi) — <code>Super + \`</code></b></summary>
+
+> Wi-Fi, Bluetooth, Volume, Brightness, Screen color, Screenshot, Lock, Logout, Reboot, Shutdown — all quick toggles in one menu.
+
+![Control center](docs/screenshots/04-control-center.png)
+
+</details>
+
+<details>
+<summary><b>🪟 Per-workspace layout menu (Rofi) — <code>Super + L</code> / <code>Super + Д</code></b></summary>
+
+> Choose horizontal / vertical / tabs / stack / default tiling / toggle split direction. The command targets the current workspace's first multi-window level so it always rearranges the entire workspace, not whichever child happened to have focus.
+
+![Layout menu](docs/screenshots/05-layout-menu.png)
+
+</details>
+
+<details>
+<summary><b>↔️ Window switcher (Rofi) — <code>Alt + Tab</code></b></summary>
+
+> Lists windows from every workspace with app icon, workspace number, class, and title. Selecting one asks i3 to focus the window — i3 automatically switches to its workspace and monitor.
+
+![Window switcher](docs/screenshots/06-window-switcher.png)
+
+</details>
+
+<details>
+<summary><b>🔒 Lock screen — <code>Ctrl + Alt + L</code></b></summary>
+
+> Time, date, "Сеанс заблокирован", password prompt, RU/EN layout hint, and the <code>Esc</code> cue. The fallback is an ImageMagick-generated Nord overlay; if <code>xsecurelock</code> is installed, it takes over with full PAM feedback.
+
+![Lock screen](docs/screenshots/07-lock-screen.png)
+
+</details>
 
 ---
 

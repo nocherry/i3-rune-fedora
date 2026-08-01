@@ -1367,3 +1367,28 @@ Telegram установлен как Flatpak `org.telegram.desktop` 7.0.6. Си�
 - Активный `~/.config/i3/config` синхронизирован в проект целиком (включая захват i3-лога и поведение Super+Shift+bracket).
 - `__pycache__` от py_compile удалён из проекта.
 - `i3 -C`, `bash -n install.sh`, `git diff --check` — OK.
+
+## План на будущее
+
+### Безопасное извлечение всего, что вошло в порты / интеграции
+Сейчас custom-скрипты глубоко вросли в систему: `audio-port-autoswitch.sh` слушает ALSA, `touchpad.py` правит XInput, `pam_kwallet_init` соединяется с KWallet socket, Telegram override висит в Flatpak, lid-suspend в `logind.conf.d`, `xss-lock` регистрирует inhibitor. Если пользователь переезжает на новую машину или хочет откатить — каждое звено нужно вспомнить отдельно.
+
+Запланировать отдельный скрипт `scripts/safe-extract.sh` (или подкоманду `install.sh extract`/`install.sh snapshot`), который за один проход собирает:
+- активный i3 config и diff против проектного;
+- все скрипты из `~/.config/i3/scripts/`;
+- KWallet-структуру (только названия коллекций и ключей, **без значений**);
+- список active Flatpak overrides (`flatpak override --user --show`);
+- `loginctl show-user`/`loginctl show-session` для lid-switch;
+- версии пакетов (`rpm -q i3 polybar picom xsecurelock ...`).
+
+Назначение:
+1. `install.sh snapshot` — делает tar-архив всех правок пользователя, безопасный для хранения в незашифрованном виде.
+2. `install.sh diff` — показывает только отклонения от проектной копии, чтобы понять, что именно «ушло в порты».
+3. `install.sh restore <archive>` — применяет сохранённый snapshot на чистую Fedora.
+
+Жёсткие требования:
+- Никогда не сохранять значения KWallet, cookies, токены, пароли.
+- Использовать `umask 077` для любых временных файлов.
+- Не модифицировать секреты: только описывать структуру.
+
+Приоритет низкий — делать после `xsecurelock` → `i3lock` переход и автоматической смены KWallet пароля, чтобы скрипт точно покрывал стабильное состояние.
