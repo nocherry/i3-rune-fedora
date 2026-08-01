@@ -92,68 +92,32 @@ This repo packages every fix and decision into a single `install.sh` that is **i
 
 All screenshots are taken on the live desktop with a real Fedora 43 install — no mock-ups.
 
-<details>
-<summary><b>🖥️ Desktop — clean workspace</b></summary>
+### 🖥️ The desktop
 
 > Polybar with all modules (workspaces, tray, brightness, eye-care 3500K, volume, Wi-Fi, CPU 4%, battery 37%), Nord theme, Japanese landscape wallpaper from <code>harilvfs/wallpapers</code>.
 
-![Desktop](docs/screenshots/01-desktop.png)
+<p align="center">
+  <img src="docs/screenshots/01-desktop.png" alt="Clean i3 desktop with full Polybar" width="100%">
+</p>
 
-</details>
+### 🚀 Built-in menus and dialogs
 
-<details>
-<summary><b>🚀 App launcher (Rofi) — <code>Super + D</code></b></summary>
+> All Rofi menus use the project's Nord theme with Papirus icons. Click any image to view at full size.
 
-> Nord-themed Rofi with Papirus icons, fuzzy search. The screenshot shows a search for "chrom" matching Google Chrome and Chromium.
-
-![Launcher](docs/screenshots/02-launcher.png)
-
-</details>
-
-<details>
-<summary><b>🔐 Power menu (Rofi) — <code>Ctrl + Alt + P</code></b></summary>
-
-> Five explicit Russian actions: Заблокировать экран, Выйти из сеанса, Перейти в сон, Перезагрузить, Выключить. <code>Esc</code>/<code>Super+Q</code> cancel.
-
-![Power menu](docs/screenshots/03-power-menu.png)
-
-</details>
-
-<details>
-<summary><b>⚙️ Control center (Rofi) — <code>Super + \`</code></b></summary>
-
-> Wi-Fi, Bluetooth, Volume, Brightness, Screen color, Screenshot, Lock, Logout, Reboot, Shutdown — all quick toggles in one menu.
-
-![Control center](docs/screenshots/04-control-center.png)
-
-</details>
-
-<details>
-<summary><b>🪟 Per-workspace layout menu (Rofi) — <code>Super + L</code> / <code>Super + Д</code></b></summary>
-
-> Choose horizontal / vertical / tabs / stack / default tiling / toggle split direction. The command targets the current workspace's first multi-window level so it always rearranges the entire workspace, not whichever child happened to have focus.
-
-![Layout menu](docs/screenshots/05-layout-menu.png)
-
-</details>
-
-<details>
-<summary><b>↔️ Window switcher (Rofi) — <code>Alt + Tab</code></b></summary>
-
-> Lists windows from every workspace with app icon, workspace number, class, and title. Selecting one asks i3 to focus the window — i3 automatically switches to its workspace and monitor.
-
-![Window switcher](docs/screenshots/06-window-switcher.png)
-
-</details>
-
-<details>
-<summary><b>🔒 Lock screen — <code>Ctrl + Alt + L</code></b></summary>
-
-> Time, date, "Сеанс заблокирован", password prompt, RU/EN layout hint, and the <code>Esc</code> cue. The fallback is an ImageMagick-generated Nord overlay; if <code>xsecurelock</code> is installed, it takes over with full PAM feedback.
-
-![Lock screen](docs/screenshots/07-lock-screen.png)
-
-</details>
+<table>
+  <tr>
+    <td align="center" width="50%"><b>🚀 App launcher — <code>Super + D</code></b><br><img src="docs/screenshots/02-launcher.png" alt="Rofi app launcher"></td>
+    <td align="center" width="50%"><b>🔐 Power menu — <code>Ctrl + Alt + P</code></b><br><img src="docs/screenshots/03-power-menu.png" alt="Russian power menu"></td>
+  </tr>
+  <tr>
+    <td align="center" width="50%"><b>⚙️ Control center — <code>Super + \`</code></b><br><img src="docs/screenshots/04-control-center.png" alt="Control center quick toggles"></td>
+    <td align="center" width="50%"><b>🪟 Layout menu — <code>Super + L</code> / <code>Super + Д</code></b><br><img src="docs/screenshots/05-layout-menu.png" alt="Per-workspace tiling chooser"></td>
+  </tr>
+  <tr>
+    <td align="center" width="50%"><b>↔️ Window switcher — <code>Alt + Tab</code></b><br><img src="docs/screenshots/06-window-switcher.png" alt="Cross-workspace window switcher"></td>
+    <td align="center" width="50%"><b>🔒 Lock screen — <code>Ctrl + Alt + L</code></b><br><img src="docs/screenshots/07-lock-screen.png" alt="Nord lock screen with time, date, layout hint"></td>
+  </tr>
+</table>
 
 ---
 

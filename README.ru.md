@@ -92,68 +92,32 @@
 
 Все скриншоты сделаны на живом desktop с реальной Fedora 43 — без мокапов.
 
-<details>
-<summary><b>🖥️ Рабочий стол — чистый workspace</b></summary>
+### 🖥️ Рабочий стол
 
 > Polybar со всеми модулями (workspaces, трей, яркость, eye-care 3500K, громкость, Wi-Fi, CPU 4%, батарея 37%), Nord-тема, японский пейзаж из <code>harilvfs/wallpapers</code>.
 
-![Desktop](docs/screenshots/01-desktop.png)
+<p align="center">
+  <img src="docs/screenshots/01-desktop.png" alt="Чистый i3 desktop с полным Polybar" width="100%">
+</p>
 
-</details>
+### 🚀 Встроенные меню и диалоги
 
-<details>
-<summary><b>🚀 Лаунчер (Rofi) — <code>Super + D</code></b></summary>
+> Все Rofi-меню используют Nord-тему проекта с иконками Papirus. Клик по картинке открывает её в полном размере.
 
-> Nord-тема Rofi с иконками Papirus, нечёткий поиск. На скриншоте введён «chrom» — найдены Google Chrome и Chromium.
-
-![Launcher](docs/screenshots/02-launcher.png)
-
-</details>
-
-<details>
-<summary><b>🔐 Меню питания (Rofi) — <code>Ctrl + Alt + P</code></b></summary>
-
-> Пять явных русских действий: Заблокировать экран, Выйти из сеанса, Перейти в сон, Перезагрузить, Выключить. <code>Esc</code>/<code>Super+Q</code> отменяют.
-
-![Power menu](docs/screenshots/03-power-menu.png)
-
-</details>
-
-<details>
-<summary><b>⚙️ Control center (Rofi) — <code>Super + \`</code></b></summary>
-
-> Wi-Fi, Bluetooth, громкость, яркость, цвет экрана, скриншот, блокировка, выход, перезагрузка, выключение — все быстрые переключатели в одном меню.
-
-![Control center](docs/screenshots/04-control-center.png)
-
-</details>
-
-<details>
-<summary><b>🪟 Меню тайлинга (Rofi) — <code>Super + L</code> / <code>Super + Д</code></b></summary>
-
-> Горизонтально / Вертикально / Вкладки / Стопка / Обычный / Сменить направление split. Команда всегда адресована первому уровню workspace с несколькими окнами, поэтому переставляется весь рабочий стол, а не случайно сфокусированный контейнер.
-
-![Layout menu](docs/screenshots/05-layout-menu.png)
-
-</details>
-
-<details>
-<summary><b>↔️ Window switcher (Rofi) — <code>Alt + Tab</code></b></summary>
-
-> Окна со всех workspace с иконкой, номером workspace, классом и заголовком. Выбор просит i3 сфокусировать окно — i3 автоматически переключается на его workspace/monitor.
-
-![Window switcher](docs/screenshots/06-window-switcher.png)
-
-</details>
-
-<details>
-<summary><b>🔒 Экран блокировки — <code>Ctrl + Alt + L</code></b></summary>
-
-> Время, дата, «Сеанс заблокирован», подсказка ввода, RU/EN-раскладка и подсказка <code>Esc</code>. Fallback — Nord-overlay через ImageMagick; если установлен <code>xsecurelock</code>, он перехватывает с полной PAM-обратной связью.
-
-![Lock screen](docs/screenshots/07-lock-screen.png)
-
-</details>
+<table>
+  <tr>
+    <td align="center" width="50%"><b>🚀 Лаунчер — <code>Super + D</code></b><br><img src="docs/screenshots/02-launcher.png" alt="Rofi-лаунчер"></td>
+    <td align="center" width="50%"><b>🔐 Меню питания — <code>Ctrl + Alt + P</code></b><br><img src="docs/screenshots/03-power-menu.png" alt="Русское меню питания"></td>
+  </tr>
+  <tr>
+    <td align="center" width="50%"><b>⚙️ Control center — <code>Super + \`</code></b><br><img src="docs/screenshots/04-control-center.png" alt="Быстрые переключатели"></td>
+    <td align="center" width="50%"><b>🪟 Меню тайлинга — <code>Super + L</code> / <code>Super + Д</code></b><br><img src="docs/screenshots/05-layout-menu.png" alt="Выбор тайлинга для workspace"></td>
+  </tr>
+  <tr>
+    <td align="center" width="50%"><b>↔️ Window switcher — <code>Alt + Tab</code></b><br><img src="docs/screenshots/06-window-switcher.png" alt="Window switcher по всем workspace"></td>
+    <td align="center" width="50%"><b>🔒 Экран блокировки — <code>Ctrl + Alt + L</code></b><br><img src="docs/screenshots/07-lock-screen.png" alt="Nord-экран блокировки"></td>
+  </tr>
+</table>
 
 ---
 
